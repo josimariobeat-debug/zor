@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useSupabaseData, useProductionOrders } from '@/hooks/useSupabaseData';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/loose';
 import { toast } from '@/hooks/use-toast';
 import { X, Plus, Trash2, Loader2, Settings, AlertTriangle, Scissors } from 'lucide-react';
 

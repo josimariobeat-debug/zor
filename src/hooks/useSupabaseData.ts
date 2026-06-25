@@ -1,18 +1,18 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import type { Database } from '@/integrations/supabase/types';
+import { supabase } from '@/integrations/supabase/loose';
+
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 
-type Tables = Database['public']['Tables'];
-type TableName = Extract<
-  keyof Tables,
-  'suppliers' | 'workshops' | 'collections' | 'fabrics' | 'trims' | 'products' | 'production_orders' | 'stock_movements' | 'technical_sheets'
->;
-
-export type Row<T extends TableName> = Tables[T]['Row'];
-export type InsertRow<T extends TableName> = Tables[T]['Insert'];
-export type UpdateRow<T extends TableName> = Tables[T]['Update'];
+// Database types are auto-generated and may be empty until tables exist.
+// Use permissive aliases so the hook can be called with any table name.
+type TableName = string;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Row<T extends TableName = string> = any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type InsertRow<T extends TableName = string> = any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type UpdateRow<T extends TableName = string> = any;
 
 function getErrorMessage(err: unknown): string {
   if (err instanceof Error) return err.message;
@@ -140,11 +140,13 @@ export function useSupabaseData<T extends { id: string } = Row<TableName>>(table
 // Hook específico para Ordens de Produção (com relacionamentos)
 export function useProductionOrders() {
   const { user } = useAuth();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sb = supabase as any;
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
-    if (!supabase || !user) {
+    if (!sb || !user) {
       setData([]);
       setLoading(false);
       return;
@@ -154,7 +156,7 @@ export function useProductionOrders() {
       setLoading(true);
       
       // Buscar OPs
-      const { data: orders, error: ordersError } = await supabase
+      const { data: orders, error: ordersError } = await sb
         .from('production_orders')
         .select('*')
         .order('created_at', { ascending: false });
@@ -163,15 +165,15 @@ export function useProductionOrders() {
 
       // Buscar itens e variações para cada OP
       const ordersWithItems = await Promise.all(
-        (orders || []).map(async (order) => {
-          const { data: items } = await supabase
+        (orders || []).map(async (order: any) => {
+          const { data: items } = await sb
             .from('production_order_items')
             .select('*')
             .eq('production_order_id', order.id);
 
           const itemsWithVariations = await Promise.all(
-            (items || []).map(async (item) => {
-              const { data: variations } = await supabase
+            (items || []).map(async (item: any) => {
+              const { data: variations } = await sb
                 .from('production_order_variations')
                 .select('*')
                 .eq('item_id', item.id);
@@ -180,7 +182,7 @@ export function useProductionOrders() {
             })
           );
 
-          const { data: trims } = await supabase
+          const { data: trims } = await sb
             .from('production_order_trims')
             .select('*')
             .eq('production_order_id', order.id);
@@ -206,9 +208,9 @@ export function useProductionOrders() {
   }, [fetchData]);
 
   const getNextOPNumber = async () => {
-    if (!supabase || !user) return 'OP-001';
+    if (!sb || !user) return 'OP-001';
     
-    const { count } = await supabase
+    const { count } = await sb
       .from('production_orders')
       .select('*', { count: 'exact', head: true });
     
@@ -216,13 +218,13 @@ export function useProductionOrders() {
   };
 
   const create = async (orderData: any) => {
-    if (!supabase || !user) return null;
+    if (!sb || !user) return null;
 
     try {
       const number = await getNextOPNumber();
 
       // 1. Criar OP
-      const { data: order, error: orderError } = await supabase
+      const { data: order, error: orderError } = await sb
         .from('production_orders')
         .insert({
           user_id: user.id,
@@ -255,7 +257,7 @@ export function useProductionOrders() {
 
       let createdItems: any[] = [];
       if (itemsToInsert.length > 0) {
-        const { data: items, error: itemsError } = await supabase
+        const { data: items, error: itemsError } = await sb
           .from('production_order_items')
           .insert(itemsToInsert)
           .select();
@@ -294,13 +296,13 @@ export function useProductionOrders() {
       
       if (variationsToInsert.length > 0) {
         parallelOps.push(
-          (async () => { await supabase.from('production_order_variations').insert(variationsToInsert); })()
+          (async () => { await sb.from('production_order_variations').insert(variationsToInsert); })()
         );
       }
       
       if (trimsToInsert.length > 0) {
         parallelOps.push(
-          (async () => { await supabase.from('production_order_trims').insert(trimsToInsert); })()
+          (async () => { await sb.from('production_order_trims').insert(trimsToInsert); })()
         );
       }
 
@@ -308,13 +310,13 @@ export function useProductionOrders() {
       if (orderData.fabric_id && orderData.fabric_meters_consumed > 0) {
         parallelOps.push(
           (async () => {
-            const { data: fabric } = await supabase
+            const { data: fabric } = await sb
               .from('fabrics')
               .select('stock')
               .eq('id', orderData.fabric_id)
               .single();
             if (fabric) {
-              await supabase
+              await sb
                 .from('fabrics')
                 .update({ stock: Math.max(0, (fabric.stock ?? 0) - orderData.fabric_meters_consumed) })
                 .eq('id', orderData.fabric_id);
@@ -328,13 +330,13 @@ export function useProductionOrders() {
         if (trim.trim_id && trim.total_qty > 0) {
           parallelOps.push(
             (async () => {
-              const { data: trimData } = await supabase
+              const { data: trimData } = await sb
                 .from('trims')
                 .select('stock')
                 .eq('id', trim.trim_id)
                 .single();
               if (trimData) {
-                await supabase
+                await sb
                   .from('trims')
                   .update({ stock: Math.max(0, (trimData.stock ?? 0) - trim.total_qty) })
                   .eq('id', trim.trim_id);
@@ -359,7 +361,7 @@ export function useProductionOrders() {
   };
 
   const cancel = async (id: string) => {
-    if (!supabase || !user) return false;
+    if (!sb || !user) return false;
 
     try {
       const order = data.find((o) => o.id === id);
@@ -371,13 +373,13 @@ export function useProductionOrders() {
       if (order.fabric_id && order.fabric_meters_consumed > 0) {
         parallelOps.push(
           (async () => {
-            const { data: fabric } = await supabase
+            const { data: fabric } = await sb
               .from('fabrics')
               .select('stock')
               .eq('id', order.fabric_id)
               .single();
             if (fabric) {
-              await supabase
+              await sb
                 .from('fabrics')
                 .update({ stock: (fabric.stock ?? 0) + order.fabric_meters_consumed })
                 .eq('id', order.fabric_id);
@@ -391,13 +393,13 @@ export function useProductionOrders() {
         if (trim.trim_id && trim.total_qty > 0) {
           parallelOps.push(
             (async () => {
-              const { data: trimData } = await supabase
+              const { data: trimData } = await sb
                 .from('trims')
                 .select('stock')
                 .eq('id', trim.trim_id)
                 .single();
               if (trimData) {
-                await supabase
+                await sb
                   .from('trims')
                   .update({ stock: (trimData.stock ?? 0) + trim.total_qty })
                   .eq('id', trim.trim_id);
@@ -410,7 +412,7 @@ export function useProductionOrders() {
       // Atualizar status (em paralelo com devolução de estoque)
       parallelOps.push(
         (async () => {
-          await supabase
+          await sb
             .from('production_orders')
             .update({ status: 'cancelado' })
             .eq('id' as never, id);
@@ -430,7 +432,7 @@ export function useProductionOrders() {
   };
 
   const remove = async (id: string) => {
-    if (!supabase || !user) return false;
+    if (!sb || !user) return false;
 
     try {
       const order = data.find((o) => o.id === id);
@@ -443,13 +445,13 @@ export function useProductionOrders() {
         if (order.fabric_id && order.fabric_meters_consumed > 0) {
           parallelOps.push(
             (async () => {
-              const { data: fabric } = await supabase
+              const { data: fabric } = await sb
                 .from('fabrics')
                 .select('stock')
                 .eq('id', order.fabric_id)
                 .single();
               if (fabric) {
-                await supabase
+                await sb
                   .from('fabrics')
                   .update({ stock: (fabric.stock ?? 0) + order.fabric_meters_consumed })
                   .eq('id', order.fabric_id);
@@ -462,13 +464,13 @@ export function useProductionOrders() {
           if (trim.trim_id && trim.total_qty > 0) {
             parallelOps.push(
               (async () => {
-                const { data: trimData } = await supabase
+                const { data: trimData } = await sb
                   .from('trims')
                   .select('stock')
                   .eq('id', trim.trim_id)
                   .single();
                 if (trimData) {
-                  await supabase
+                  await sb
                     .from('trims')
                     .update({ stock: (trimData.stock ?? 0) + trim.total_qty })
                     .eq('id', trim.trim_id);
@@ -483,7 +485,7 @@ export function useProductionOrders() {
       await Promise.all(parallelOps);
 
       // Deletar OP (cascata deleta itens, variações e aviamentos)
-      await supabase
+      await sb
         .from('production_orders')
         .delete()
         .eq('id' as never, id);
@@ -499,7 +501,7 @@ export function useProductionOrders() {
   };
 
   const update = async (orderId: string, orderData: any) => {
-    if (!supabase || !user) return null;
+    if (!sb || !user) return null;
 
     try {
       const previousOrder = data.find((o) => o.id === orderId);
@@ -511,13 +513,13 @@ export function useProductionOrders() {
       if (previousOrder && !wasCancelled) {
         if (previousOrder.fabric_id && previousOrder.fabric_meters_consumed > 0) {
           revertOps.push((async () => {
-            const { data: fabric } = await supabase
+            const { data: fabric } = await sb
               .from('fabrics')
               .select('stock')
               .eq('id', previousOrder.fabric_id)
               .maybeSingle();
             if (fabric) {
-              await supabase
+              await sb
                 .from('fabrics')
                 .update({ stock: (fabric.stock ?? 0) + previousOrder.fabric_meters_consumed })
                 .eq('id', previousOrder.fabric_id);
@@ -527,13 +529,13 @@ export function useProductionOrders() {
         for (const trim of previousOrder.trims_used || []) {
           if (trim.trim_id && trim.total_qty > 0) {
             revertOps.push((async () => {
-              const { data: trimData } = await supabase
+              const { data: trimData } = await sb
                 .from('trims')
                 .select('stock')
                 .eq('id', trim.trim_id)
                 .maybeSingle();
               if (trimData) {
-                await supabase
+                await sb
                   .from('trims')
                   .update({ stock: (trimData.stock ?? 0) + trim.total_qty })
                   .eq('id', trim.trim_id);
@@ -545,7 +547,7 @@ export function useProductionOrders() {
       await Promise.all(revertOps);
 
       // 2. Atualizar OP
-      const { data: order, error: orderError } = await supabase
+      const { data: order, error: orderError } = await sb
         .from('production_orders')
         .update({
           fabric_id: orderData.fabric_id || null,
@@ -570,13 +572,13 @@ export function useProductionOrders() {
 
       // 3. Deletar itens e aviamentos antigos
       await Promise.all([
-        supabase.from('production_order_items').delete().eq('production_order_id', orderId),
-        supabase.from('production_order_trims').delete().eq('production_order_id', orderId),
+        sb.from('production_order_items').delete().eq('production_order_id', orderId),
+        sb.from('production_order_trims').delete().eq('production_order_id', orderId),
       ]);
 
       // 4. Criar novos itens + variações
       for (const item of orderData.items || []) {
-        const { data: orderItem, error: itemError } = await supabase
+        const { data: orderItem, error: itemError } = await sb
           .from('production_order_items')
           .insert({
             production_order_id: order.id,
@@ -596,7 +598,7 @@ export function useProductionOrders() {
           meters_per_piece: v.meters_per_piece,
         }));
         if (variationsToInsert.length > 0) {
-          await supabase.from('production_order_variations').insert(variationsToInsert);
+          await sb.from('production_order_variations').insert(variationsToInsert);
         }
       }
 
@@ -609,7 +611,7 @@ export function useProductionOrders() {
         total_qty: trim.total_qty,
       }));
       if (trimsToInsert.length > 0) {
-        await supabase.from('production_order_trims').insert(trimsToInsert);
+        await sb.from('production_order_trims').insert(trimsToInsert);
       }
 
       // 6. Debitar estoque da nova versão (se não cancelada)
@@ -617,13 +619,13 @@ export function useProductionOrders() {
       if (!willBeCancelled) {
         if (orderData.fabric_id && orderData.fabric_meters_consumed > 0) {
           debitOps.push((async () => {
-            const { data: fabric } = await supabase
+            const { data: fabric } = await sb
               .from('fabrics')
               .select('stock')
               .eq('id', orderData.fabric_id)
               .maybeSingle();
             if (fabric) {
-              await supabase
+              await sb
                 .from('fabrics')
                 .update({ stock: Math.max(0, (fabric.stock ?? 0) - orderData.fabric_meters_consumed) })
                 .eq('id', orderData.fabric_id);
@@ -633,13 +635,13 @@ export function useProductionOrders() {
         for (const trim of orderData.trims_used || []) {
           if (trim.trim_id && trim.total_qty > 0) {
             debitOps.push((async () => {
-              const { data: trimData } = await supabase
+              const { data: trimData } = await sb
                 .from('trims')
                 .select('stock')
                 .eq('id', trim.trim_id)
                 .maybeSingle();
               if (trimData) {
-                await supabase
+                await sb
                   .from('trims')
                   .update({ stock: Math.max(0, (trimData.stock ?? 0) - trim.total_qty) })
                   .eq('id', trim.trim_id);
