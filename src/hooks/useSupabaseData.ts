@@ -165,14 +165,14 @@ export function useProductionOrders() {
 
       // Buscar itens e variações para cada OP
       const ordersWithItems = await Promise.all(
-        (orders || []).map(async (order) => {
+        (orders || []).map(async (order: any) => {
           const { data: items } = await sb
             .from('production_order_items')
             .select('*')
             .eq('production_order_id', order.id);
 
           const itemsWithVariations = await Promise.all(
-            (items || []).map(async (item) => {
+            (items || []).map(async (item: any) => {
               const { data: variations } = await sb
                 .from('production_order_variations')
                 .select('*')
