@@ -3,3 +3,5 @@
 @import 'tailwindcss';
 
 @import './theme.css' layer(theme);
+
+#lovable-badge { display: none !important; }
