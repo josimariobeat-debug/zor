@@ -1,4 +1,3 @@
-// @ts-nocheck - Cloud habilitado mas tabelas ainda não criadas; remova após gerar tipos.
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router';

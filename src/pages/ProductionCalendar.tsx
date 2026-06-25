@@ -1,4 +1,3 @@
-// @ts-nocheck - Cloud habilitado mas tabelas ainda não criadas; remova após gerar tipos.
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';

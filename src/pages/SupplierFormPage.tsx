@@ -1,4 +1,3 @@
-// @ts-nocheck - Cloud habilitado mas tabelas ainda não criadas; remova após gerar tipos.
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { Input } from '@/components/ui/input';

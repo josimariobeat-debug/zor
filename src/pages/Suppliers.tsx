@@ -1,4 +1,3 @@
-// @ts-nocheck - Cloud habilitado mas tabelas ainda não criadas; remova após gerar tipos.
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Card } from '@/components/ui/card';
