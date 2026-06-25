@@ -92,7 +92,7 @@ export function useSupabaseData<T extends TableName>(tableName: T) {
       const { data: result, error } = await supabase
         .from(tableName)
         .update(payload as never)
-        .eq('id', id)
+        .eq('id' as never, id)
         .select()
         .single();
 
@@ -114,7 +114,7 @@ export function useSupabaseData<T extends TableName>(tableName: T) {
       const { error } = await supabase
         .from(tableName)
         .delete()
-        .eq('id', id);
+        .eq('id' as never, id);
 
       if (error) throw error;
       setData((prev) => prev.filter((item) => (item as { id: string }).id !== id));
@@ -413,7 +413,7 @@ export function useProductionOrders() {
           await supabase
             .from('production_orders')
             .update({ status: 'cancelado' })
-            .eq('id', id);
+            .eq('id' as never, id);
         })()
       );
 
@@ -486,7 +486,7 @@ export function useProductionOrders() {
       await supabase
         .from('production_orders')
         .delete()
-        .eq('id', id);
+        .eq('id' as never, id);
 
       // Atualizar estado local
       setData((prev) => prev.filter((o) => o.id !== id));
