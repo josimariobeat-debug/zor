@@ -23,8 +23,8 @@ function getErrorMessage(err: unknown): string {
   return 'Erro desconhecido';
 }
 
-export function useSupabaseData<T extends TableName>(tableName: T) {
-  type R = Row<T>;
+export function useSupabaseData<T extends { id: string } = Row<TableName>>(tableName: TableName) {
+  type R = T;
   const { user } = useAuth();
   const [data, setData] = useState<R[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,12 +61,12 @@ export function useSupabaseData<T extends TableName>(tableName: T) {
   }, [fetchData]);
 
   const create = async (
-    item: Omit<InsertRow<T>, 'id' | 'created_at' | 'updated_at' | 'user_id'>,
+    item: Omit<R, 'id' | 'created_at' | 'updated_at' | 'user_id'>,
   ): Promise<R | null> => {
     if (!supabase || !user) return null;
 
     try {
-      const payload = { ...item, user_id: user.id } as unknown as InsertRow<T>;
+      const payload = { ...item, user_id: user.id } as unknown as InsertRow<TableName>;
       const { data: result, error } = await supabase
         .from(tableName)
         .insert(payload as never)
@@ -84,11 +84,11 @@ export function useSupabaseData<T extends TableName>(tableName: T) {
     }
   };
 
-  const update = async (id: string, updates: Partial<UpdateRow<T>>): Promise<R | null> => {
+  const update = async (id: string, updates: Partial<R>): Promise<R | null> => {
     if (!supabase || !user) return null;
 
     try {
-      const payload = { ...updates, updated_at: new Date().toISOString() } as unknown as UpdateRow<T>;
+      const payload = { ...updates, updated_at: new Date().toISOString() } as unknown as UpdateRow<TableName>;
       const { data: result, error } = await supabase
         .from(tableName)
         .update(payload as never)
