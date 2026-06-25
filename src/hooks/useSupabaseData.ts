@@ -1,14 +1,32 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 
-type TableName = 'suppliers' | 'workshops' | 'collections' | 'fabrics' | 'trims' | 'products' | 'production_orders' | 'stock_movements' | 'technical_sheets';
+type Tables = Database['public']['Tables'];
+type TableName = Extract<
+  keyof Tables,
+  'suppliers' | 'workshops' | 'collections' | 'fabrics' | 'trims' | 'products' | 'production_orders' | 'stock_movements' | 'technical_sheets'
+>;
 
-export function useSupabaseData<T extends { id: string }>(tableName: TableName) {
+export type Row<T extends TableName> = Tables[T]['Row'];
+export type InsertRow<T extends TableName> = Tables[T]['Insert'];
+export type UpdateRow<T extends TableName> = Tables[T]['Update'];
+
+function getErrorMessage(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (typeof err === 'object' && err !== null && 'message' in err) {
+    const m = (err as { message: unknown }).message;
+    if (typeof m === 'string') return m;
+  }
+  return 'Erro desconhecido';
+}
+
+export function useSupabaseData<T extends TableName>(tableName: T) {
+  type R = Row<T>;
   const { user } = useAuth();
-  const [data, setData] = useState<T[]>([]);
+  const [data, setData] = useState<R[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,11 +45,12 @@ export function useSupabaseData<T extends { id: string }>(tableName: TableName) 
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setData((result as unknown as T[]) || []);
+      setData(((result ?? []) as unknown) as R[]);
       setError(null);
-    } catch (err: any) {
-      setError(err.message);
-      toast({ title: 'Erro ao carregar dados', description: err.message, variant: 'destructive' });
+    } catch (err: unknown) {
+      const message = getErrorMessage(err);
+      setError(message);
+      toast({ title: 'Erro ao carregar dados', description: message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -41,59 +60,67 @@ export function useSupabaseData<T extends { id: string }>(tableName: TableName) 
     fetchData();
   }, [fetchData]);
 
-  const create = async (item: Omit<T, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => {
+  const create = async (
+    item: Omit<InsertRow<T>, 'id' | 'created_at' | 'updated_at' | 'user_id'>,
+  ): Promise<R | null> => {
     if (!supabase || !user) return null;
 
     try {
+      const payload = { ...item, user_id: user.id } as unknown as InsertRow<T>;
       const { data: result, error } = await supabase
         .from(tableName)
-        .insert({ ...item, user_id: user.id } as any)
+        .insert(payload as never)
         .select()
         .single();
 
       if (error) throw error;
-      setData((prev) => [result as unknown as T, ...prev]);
-      return result as unknown as T;
-    } catch (err: any) {
-      toast({ title: 'Erro ao criar', description: err.message, variant: 'destructive' });
+      if (!result) return null;
+      const row = result as unknown as R;
+      setData((prev) => [row, ...prev]);
+      return row;
+    } catch (err: unknown) {
+      toast({ title: 'Erro ao criar', description: getErrorMessage(err), variant: 'destructive' });
       return null;
     }
   };
 
-  const update = async (id: string, updates: Partial<T>) => {
+  const update = async (id: string, updates: Partial<UpdateRow<T>>): Promise<R | null> => {
     if (!supabase || !user) return null;
 
     try {
+      const payload = { ...updates, updated_at: new Date().toISOString() } as unknown as UpdateRow<T>;
       const { data: result, error } = await supabase
         .from(tableName)
-        .update({ ...updates, updated_at: new Date().toISOString() } as never)
-        .eq('id', id)
+        .update(payload as never)
+        .eq('id' as never, id)
         .select()
         .single();
 
       if (error) throw error;
-      setData((prev) => prev.map((item) => (item.id === id ? (result as unknown as T) : item)));
-      return result as unknown as T;
-    } catch (err: any) {
-      toast({ title: 'Erro ao atualizar', description: err.message, variant: 'destructive' });
+      if (!result) return null;
+      const row = result as unknown as R;
+      setData((prev) => prev.map((item) => ((item as { id: string }).id === id ? row : item)));
+      return row;
+    } catch (err: unknown) {
+      toast({ title: 'Erro ao atualizar', description: getErrorMessage(err), variant: 'destructive' });
       return null;
     }
   };
 
-  const remove = async (id: string) => {
+  const remove = async (id: string): Promise<boolean> => {
     if (!supabase || !user) return false;
 
     try {
       const { error } = await supabase
         .from(tableName)
         .delete()
-        .eq('id', id);
+        .eq('id' as never, id);
 
       if (error) throw error;
-      setData((prev) => prev.filter((item) => item.id !== id));
+      setData((prev) => prev.filter((item) => (item as { id: string }).id !== id));
       return true;
-    } catch (err: any) {
-      toast({ title: 'Erro ao excluir', description: err.message, variant: 'destructive' });
+    } catch (err: unknown) {
+      toast({ title: 'Erro ao excluir', description: getErrorMessage(err), variant: 'destructive' });
       return false;
     }
   };
@@ -108,6 +135,7 @@ export function useSupabaseData<T extends { id: string }>(tableName: TableName) 
     remove,
   };
 }
+
 
 // Hook específico para Ordens de Produção (com relacionamentos)
 export function useProductionOrders() {
@@ -351,7 +379,7 @@ export function useProductionOrders() {
             if (fabric) {
               await supabase
                 .from('fabrics')
-                .update({ stock: fabric.stock + order.fabric_meters_consumed })
+                .update({ stock: (fabric.stock ?? 0) + order.fabric_meters_consumed })
                 .eq('id', order.fabric_id);
             }
           })()
@@ -371,7 +399,7 @@ export function useProductionOrders() {
               if (trimData) {
                 await supabase
                   .from('trims')
-                  .update({ stock: trimData.stock + trim.total_qty })
+                  .update({ stock: (trimData.stock ?? 0) + trim.total_qty })
                   .eq('id', trim.trim_id);
               }
             })()
@@ -385,7 +413,7 @@ export function useProductionOrders() {
           await supabase
             .from('production_orders')
             .update({ status: 'cancelado' })
-            .eq('id', id);
+            .eq('id' as never, id);
         })()
       );
 
@@ -423,7 +451,7 @@ export function useProductionOrders() {
               if (fabric) {
                 await supabase
                   .from('fabrics')
-                  .update({ stock: fabric.stock + order.fabric_meters_consumed })
+                  .update({ stock: (fabric.stock ?? 0) + order.fabric_meters_consumed })
                   .eq('id', order.fabric_id);
               }
             })()
@@ -442,7 +470,7 @@ export function useProductionOrders() {
                 if (trimData) {
                   await supabase
                     .from('trims')
-                    .update({ stock: trimData.stock + trim.total_qty })
+                    .update({ stock: (trimData.stock ?? 0) + trim.total_qty })
                     .eq('id', trim.trim_id);
                 }
               })()
@@ -458,7 +486,7 @@ export function useProductionOrders() {
       await supabase
         .from('production_orders')
         .delete()
-        .eq('id', id);
+        .eq('id' as never, id);
 
       // Atualizar estado local
       setData((prev) => prev.filter((o) => o.id !== id));
