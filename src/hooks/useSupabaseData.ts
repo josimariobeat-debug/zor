@@ -141,7 +141,7 @@ export function useSupabaseData<T extends { id: string } = Row<TableName>>(table
 export function useProductionOrders() {
   const { user } = useAuth();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const supabase = supabase as any;
+  const sb = supabase as any;
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
