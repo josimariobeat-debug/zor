@@ -1,4 +1,3 @@
-// @ts-nocheck
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -289,7 +288,7 @@ export function useProductionOrders() {
             if (fabric) {
               await supabase
                 .from('fabrics')
-                .update({ stock: Math.max(0, fabric.stock - orderData.fabric_meters_consumed) })
+                .update({ stock: Math.max(0, (fabric.stock ?? 0) - orderData.fabric_meters_consumed) })
                 .eq('id', orderData.fabric_id);
             }
           })()
@@ -309,7 +308,7 @@ export function useProductionOrders() {
               if (trimData) {
                 await supabase
                   .from('trims')
-                  .update({ stock: Math.max(0, trimData.stock - trim.total_qty) })
+                  .update({ stock: Math.max(0, (trimData.stock ?? 0) - trim.total_qty) })
                   .eq('id', trim.trim_id);
               }
             })()
