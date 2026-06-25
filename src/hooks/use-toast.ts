@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 export interface Toast {
   id: string;
@@ -37,14 +37,14 @@ export function useToast() {
     setToasts(prev => prev.filter(t => t.id !== id));
   }, []);
 
-  useState(() => {
+  useEffect(() => {
     toastListeners.push(addToast);
     dismissListeners.push(removeToast);
     return () => {
       toastListeners = toastListeners.filter(l => l !== addToast);
       dismissListeners = dismissListeners.filter(l => l !== removeToast);
     };
-  });
+  }, [addToast, removeToast]);
 
   return { toasts, toast, dismissToast: removeToast };
 }
