@@ -1,0 +1,94 @@
+CREATE TABLE public.suppliers (id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY, user_id UUID REFERENCES auth.users NOT NULL, name TEXT NOT NULL, type TEXT NOT NULL DEFAULT 'Tecido', contact TEXT, phone TEXT, email TEXT, city TEXT, lead_time INTEGER DEFAULT 7, rating INTEGER DEFAULT 5, status TEXT DEFAULT 'Ativo', created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now());
+CREATE TABLE public.workshops (id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY, user_id UUID REFERENCES auth.users NOT NULL, name TEXT NOT NULL, specialty TEXT, phone TEXT, email TEXT, price_per_piece DECIMAL(10,2) DEFAULT 0, rating INTEGER DEFAULT 5, status TEXT DEFAULT 'Ativa', in_progress INTEGER DEFAULT 0, created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now());
+CREATE TABLE public.collections (id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY, user_id UUID REFERENCES auth.users NOT NULL, name TEXT NOT NULL, season TEXT, launch_date DATE, goal DECIMAL(10,2) DEFAULT 0, status TEXT DEFAULT 'Planejamento', description TEXT, image TEXT, created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now());
+CREATE TABLE public.fabrics (id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY, user_id UUID REFERENCES auth.users NOT NULL, name TEXT NOT NULL, type TEXT, color TEXT, supplier_id UUID REFERENCES public.suppliers(id) ON DELETE SET NULL, width DECIMAL(5,2) DEFAULT 1.4, gramatura INTEGER DEFAULT 0, stock DECIMAL(10,2) DEFAULT 0, price_per_meter DECIMAL(10,2) DEFAULT 0, location TEXT, min_stock numeric DEFAULT 5, created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now());
+CREATE TABLE public.trims (id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY, user_id UUID REFERENCES auth.users NOT NULL, name TEXT NOT NULL, type TEXT, supplier_id UUID REFERENCES public.suppliers(id) ON DELETE SET NULL, stock DECIMAL(10,2) DEFAULT 0, unit TEXT DEFAULT 'unidade', price_per_unit DECIMAL(10,2) DEFAULT 0, min_stock DECIMAL(10,2) DEFAULT 0, created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now());
+CREATE TABLE public.products (id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY, user_id UUID REFERENCES auth.users NOT NULL, name TEXT NOT NULL, sku TEXT, internal_code TEXT, category TEXT, collection_id UUID REFERENCES public.collections(id) ON DELETE SET NULL, sizes TEXT[] DEFAULT '{}', colors TEXT[] DEFAULT '{}', stock INTEGER DEFAULT 0, cost_price DECIMAL(10,2) DEFAULT 0, sale_price DECIMAL(10,2) DEFAULT 0, margin DECIMAL(5,2) DEFAULT 0, description TEXT, status TEXT DEFAULT 'Ativo', image TEXT, meters_per_unit DECIMAL(5,2) DEFAULT 1, labor_cost DECIMAL(10,2) DEFAULT 0, workshop_id UUID REFERENCES public.workshops(id) ON DELETE SET NULL, operational_cost DECIMAL(10,2) DEFAULT 0, fabrics_cost DECIMAL(10,2) DEFAULT 0, trims_cost DECIMAL(10,2) DEFAULT 0, created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now());
+CREATE TABLE public.production_orders (id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY, user_id UUID REFERENCES auth.users NOT NULL, number TEXT NOT NULL, fabric_id UUID REFERENCES public.fabrics(id) ON DELETE SET NULL, fabric_name TEXT, fabric_meters_consumed DECIMAL(10,2) DEFAULT 0, workshop_id UUID REFERENCES public.workshops(id) ON DELETE SET NULL, workshop_name TEXT, quantity INTEGER DEFAULT 0, status TEXT DEFAULT 'modelagem', priority TEXT DEFAULT 'normal', start_date DATE, deadline DATE, observations TEXT, total_cost DECIMAL(10,2) DEFAULT 0, total_revenue DECIMAL(10,2) DEFAULT 0, created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now());
+CREATE TABLE public.production_order_items (id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY, production_order_id UUID REFERENCES public.production_orders(id) ON DELETE CASCADE NOT NULL, product_id UUID REFERENCES public.products(id) ON DELETE SET NULL, product_name TEXT NOT NULL, created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now());
+CREATE TABLE public.production_order_variations (id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY, item_id UUID REFERENCES public.production_order_items(id) ON DELETE CASCADE NOT NULL, size TEXT, color TEXT, qty INTEGER DEFAULT 1, meters_per_piece DECIMAL(5,2) DEFAULT 0.8, created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now());
+CREATE TABLE public.production_order_trims (id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY, production_order_id UUID REFERENCES public.production_orders(id) ON DELETE CASCADE NOT NULL, trim_id UUID REFERENCES public.trims(id) ON DELETE SET NULL, trim_name TEXT NOT NULL, qty_per_piece DECIMAL(10,2) DEFAULT 1, total_qty DECIMAL(10,2) DEFAULT 0, created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now());
+CREATE TABLE public.stock_movements (id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY, user_id UUID REFERENCES auth.users NOT NULL, type TEXT NOT NULL CHECK (type IN ('Entrada', 'Saida')), category TEXT NOT NULL CHECK (category IN ('Tecido', 'Aviamento')), item_id UUID, item_name TEXT NOT NULL, qty DECIMAL(10,2) NOT NULL, unit TEXT DEFAULT 'unidade', reason TEXT, created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now());
+CREATE TABLE public.technical_sheets (id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY, user_id UUID REFERENCES auth.users NOT NULL, product_id UUID REFERENCES public.products(id) ON DELETE CASCADE NOT NULL, product_name TEXT NOT NULL, fabric_cost DECIMAL(10,2) DEFAULT 0, trims_cost DECIMAL(10,2) DEFAULT 0, labor_cost DECIMAL(10,2) DEFAULT 0, total_cost DECIMAL(10,2) DEFAULT 0, suggested_price DECIMAL(10,2) DEFAULT 0, created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now());
+CREATE TABLE public.product_fabrics (id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY, product_id UUID REFERENCES public.products(id) ON DELETE CASCADE NOT NULL, fabric_id UUID REFERENCES public.fabrics(id) ON DELETE SET NULL, fabric_name TEXT NOT NULL, meters_used DECIMAL(10,2) DEFAULT 0, cost DECIMAL(10,2) DEFAULT 0, created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now());
+CREATE TABLE public.product_trims (id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY, product_id UUID REFERENCES public.products(id) ON DELETE CASCADE NOT NULL, trim_id UUID REFERENCES public.trims(id) ON DELETE SET NULL, trim_name TEXT NOT NULL, quantity DECIMAL(10,2) DEFAULT 0, cost DECIMAL(10,2) DEFAULT 0, created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now());
+CREATE TABLE public.op_dispatches (id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY, user_id UUID REFERENCES auth.users NOT NULL, production_order_id UUID REFERENCES public.production_orders(id) ON DELETE CASCADE NOT NULL, op_number TEXT NOT NULL, workshop_id UUID REFERENCES public.workshops(id), workshop_name TEXT, workshop_phone TEXT, access_token TEXT NOT NULL UNIQUE DEFAULT encode(gen_random_bytes(16), 'hex'), status TEXT DEFAULT 'em_producao' CHECK (status IN ('em_producao', 'finalizado', 'cancelado')), total_pieces INTEGER DEFAULT 0, completed_pieces INTEGER DEFAULT 0, sent_at TIMESTAMP WITH TIME ZONE DEFAULT now(), finished_at TIMESTAMP WITH TIME ZONE, created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now());
+CREATE TABLE public.op_dispatch_items (id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY, dispatch_id UUID REFERENCES public.op_dispatches(id) ON DELETE CASCADE NOT NULL, variation_id UUID REFERENCES public.production_order_variations(id), product_name TEXT NOT NULL, size TEXT, color TEXT, qty INTEGER DEFAULT 0, completed_qty INTEGER DEFAULT 0, is_completed BOOLEAN DEFAULT false, completed_at TIMESTAMP WITH TIME ZONE, created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now());
+CREATE TABLE public.calendar_notes (id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY, user_id UUID REFERENCES auth.users NOT NULL, date DATE NOT NULL, text TEXT, attachment_url TEXT, attachment_type TEXT CHECK (attachment_type IN ('image', 'video')), created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now());
+
+CREATE INDEX idx_suppliers_user_id ON public.suppliers(user_id);
+CREATE INDEX idx_workshops_user_id ON public.workshops(user_id);
+CREATE INDEX idx_collections_user_id ON public.collections(user_id);
+CREATE INDEX idx_fabrics_user_id ON public.fabrics(user_id);
+CREATE INDEX idx_trims_user_id ON public.trims(user_id);
+CREATE INDEX idx_products_user_id ON public.products(user_id);
+CREATE INDEX idx_production_orders_user_id ON public.production_orders(user_id);
+CREATE INDEX idx_stock_movements_user_id ON public.stock_movements(user_id);
+CREATE INDEX idx_technical_sheets_user_id ON public.technical_sheets(user_id);
+CREATE INDEX idx_product_fabrics_product_id ON public.product_fabrics(product_id);
+CREATE INDEX idx_product_trims_product_id ON public.product_trims(product_id);
+CREATE INDEX idx_op_dispatches_user ON public.op_dispatches(user_id);
+CREATE INDEX idx_op_dispatches_token ON public.op_dispatches(access_token);
+CREATE INDEX idx_op_dispatch_items_dispatch ON public.op_dispatch_items(dispatch_id);
+CREATE INDEX idx_calendar_notes_user_date ON public.calendar_notes(user_id, date);
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.suppliers TO authenticated; GRANT ALL ON public.suppliers TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.workshops TO authenticated; GRANT ALL ON public.workshops TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.collections TO authenticated; GRANT ALL ON public.collections TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.fabrics TO authenticated; GRANT ALL ON public.fabrics TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.trims TO authenticated; GRANT ALL ON public.trims TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.products TO authenticated; GRANT ALL ON public.products TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.production_orders TO authenticated; GRANT ALL ON public.production_orders TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.production_order_items TO authenticated; GRANT ALL ON public.production_order_items TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.production_order_variations TO authenticated; GRANT ALL ON public.production_order_variations TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.production_order_trims TO authenticated; GRANT ALL ON public.production_order_trims TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.stock_movements TO authenticated; GRANT ALL ON public.stock_movements TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.technical_sheets TO authenticated; GRANT ALL ON public.technical_sheets TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.product_fabrics TO authenticated; GRANT ALL ON public.product_fabrics TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.product_trims TO authenticated; GRANT ALL ON public.product_trims TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.op_dispatches TO authenticated; GRANT SELECT ON public.op_dispatches TO anon; GRANT ALL ON public.op_dispatches TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.op_dispatch_items TO authenticated; GRANT SELECT, UPDATE ON public.op_dispatch_items TO anon; GRANT ALL ON public.op_dispatch_items TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.calendar_notes TO authenticated; GRANT ALL ON public.calendar_notes TO service_role;
+
+ALTER TABLE public.suppliers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.workshops ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.collections ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.fabrics ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.trims ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.production_orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.production_order_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.production_order_variations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.production_order_trims ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.stock_movements ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.technical_sheets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.product_fabrics ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.product_trims ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.op_dispatches ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.op_dispatch_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.calendar_notes ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "own_all" ON public.suppliers FOR ALL TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "own_all" ON public.workshops FOR ALL TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "own_all" ON public.collections FOR ALL TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "own_all" ON public.fabrics FOR ALL TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "own_all" ON public.trims FOR ALL TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "own_all" ON public.products FOR ALL TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "own_all" ON public.production_orders FOR ALL TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "own_all" ON public.stock_movements FOR ALL TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "own_all" ON public.technical_sheets FOR ALL TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "own_all" ON public.calendar_notes FOR ALL TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
+
+CREATE POLICY "po_child_all" ON public.production_order_items FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.production_orders po WHERE po.id = production_order_id AND po.user_id = (select auth.uid()))) WITH CHECK (EXISTS (SELECT 1 FROM public.production_orders po WHERE po.id = production_order_id AND po.user_id = (select auth.uid())));
+CREATE POLICY "po_child_all" ON public.production_order_trims FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.production_orders po WHERE po.id = production_order_id AND po.user_id = (select auth.uid()))) WITH CHECK (EXISTS (SELECT 1 FROM public.production_orders po WHERE po.id = production_order_id AND po.user_id = (select auth.uid())));
+CREATE POLICY "po_child_all" ON public.production_order_variations FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.production_order_items poi JOIN public.production_orders po ON po.id = poi.production_order_id WHERE poi.id = item_id AND po.user_id = (select auth.uid()))) WITH CHECK (EXISTS (SELECT 1 FROM public.production_order_items poi JOIN public.production_orders po ON po.id = poi.production_order_id WHERE poi.id = item_id AND po.user_id = (select auth.uid())));
+
+CREATE POLICY "prod_child_all" ON public.product_fabrics FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.products p WHERE p.id = product_id AND p.user_id = (select auth.uid()))) WITH CHECK (EXISTS (SELECT 1 FROM public.products p WHERE p.id = product_id AND p.user_id = (select auth.uid())));
+CREATE POLICY "prod_child_all" ON public.product_trims FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.products p WHERE p.id = product_id AND p.user_id = (select auth.uid()))) WITH CHECK (EXISTS (SELECT 1 FROM public.products p WHERE p.id = product_id AND p.user_id = (select auth.uid())));
+
+CREATE POLICY "own_all" ON public.op_dispatches FOR ALL TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "public_view_by_token" ON public.op_dispatches FOR SELECT TO anon USING (true);
+
+CREATE POLICY "auth_all_via_dispatch" ON public.op_dispatch_items FOR ALL TO authenticated USING (dispatch_id IN (SELECT id FROM public.op_dispatches WHERE user_id = (select auth.uid()))) WITH CHECK (dispatch_id IN (SELECT id FROM public.op_dispatches WHERE user_id = (select auth.uid())));
+CREATE POLICY "public_view_items" ON public.op_dispatch_items FOR SELECT TO anon USING (true);
+CREATE POLICY "public_update_items" ON public.op_dispatch_items FOR UPDATE TO anon USING (true) WITH CHECK (true);
