@@ -294,13 +294,13 @@ export function useProductionOrders() {
       
       if (variationsToInsert.length > 0) {
         parallelOps.push(
-          (async () => { await supabase.from('production_order_variations').insert(variationsToInsert); })()
+          (async () => { await sb.from('production_order_variations').insert(variationsToInsert); })()
         );
       }
       
       if (trimsToInsert.length > 0) {
         parallelOps.push(
-          (async () => { await supabase.from('production_order_trims').insert(trimsToInsert); })()
+          (async () => { await sb.from('production_order_trims').insert(trimsToInsert); })()
         );
       }
 
@@ -570,8 +570,8 @@ export function useProductionOrders() {
 
       // 3. Deletar itens e aviamentos antigos
       await Promise.all([
-        supabase.from('production_order_items').delete().eq('production_order_id', orderId),
-        supabase.from('production_order_trims').delete().eq('production_order_id', orderId),
+        sb.from('production_order_items').delete().eq('production_order_id', orderId),
+        sb.from('production_order_trims').delete().eq('production_order_id', orderId),
       ]);
 
       // 4. Criar novos itens + variações
@@ -596,7 +596,7 @@ export function useProductionOrders() {
           meters_per_piece: v.meters_per_piece,
         }));
         if (variationsToInsert.length > 0) {
-          await supabase.from('production_order_variations').insert(variationsToInsert);
+          await sb.from('production_order_variations').insert(variationsToInsert);
         }
       }
 
@@ -609,7 +609,7 @@ export function useProductionOrders() {
         total_qty: trim.total_qty,
       }));
       if (trimsToInsert.length > 0) {
-        await supabase.from('production_order_trims').insert(trimsToInsert);
+        await sb.from('production_order_trims').insert(trimsToInsert);
       }
 
       // 6. Debitar estoque da nova versão (se não cancelada)
