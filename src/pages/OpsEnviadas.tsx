@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';

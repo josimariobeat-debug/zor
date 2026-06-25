@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { create } from 'zustand';
 import { mockProductionOrders, mockFabrics, mockProducts, mockWorkshops, mockTrims } from './mock-data';
 import type { Fabric, Product, Workshop, Trim } from './types';

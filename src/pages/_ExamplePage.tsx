@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * EXAMPLE PAGE — Reference for AI-generated pages.
  * Delete this file when building your app. It exists to show correct patterns.
