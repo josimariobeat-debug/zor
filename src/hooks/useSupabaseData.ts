@@ -4,15 +4,15 @@ import type { Database } from '@/integrations/supabase/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 
-type Tables = Database['public']['Tables'];
-type TableName = Extract<
-  keyof Tables,
-  'suppliers' | 'workshops' | 'collections' | 'fabrics' | 'trims' | 'products' | 'production_orders' | 'stock_movements' | 'technical_sheets'
->;
-
-export type Row<T extends TableName> = Tables[T]['Row'];
-export type InsertRow<T extends TableName> = Tables[T]['Insert'];
-export type UpdateRow<T extends TableName> = Tables[T]['Update'];
+// Database types are auto-generated and may be empty until tables exist.
+// Use permissive aliases so the hook can be called with any table name.
+type TableName = string;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Row<T extends TableName = string> = any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type InsertRow<T extends TableName = string> = any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type UpdateRow<T extends TableName = string> = any;
 
 function getErrorMessage(err: unknown): string {
   if (err instanceof Error) return err.message;
