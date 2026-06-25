@@ -502,7 +502,49 @@ export function useProductionOrders() {
     if (!supabase || !user) return null;
 
     try {
-      // Atualizar OP
+      const previousOrder = data.find((o) => o.id === orderId);
+      const wasCancelled = previousOrder?.status === 'cancelado';
+      const willBeCancelled = (orderData.status || 'modelagem') === 'cancelado';
+
+      // 1. Devolver estoque da versão antiga (se ainda não estava cancelada)
+      const revertOps: Promise<unknown>[] = [];
+      if (previousOrder && !wasCancelled) {
+        if (previousOrder.fabric_id && previousOrder.fabric_meters_consumed > 0) {
+          revertOps.push((async () => {
+            const { data: fabric } = await supabase
+              .from('fabrics')
+              .select('stock')
+              .eq('id', previousOrder.fabric_id)
+              .maybeSingle();
+            if (fabric) {
+              await supabase
+                .from('fabrics')
+                .update({ stock: (fabric.stock ?? 0) + previousOrder.fabric_meters_consumed })
+                .eq('id', previousOrder.fabric_id);
+            }
+          })());
+        }
+        for (const trim of previousOrder.trims_used || []) {
+          if (trim.trim_id && trim.total_qty > 0) {
+            revertOps.push((async () => {
+              const { data: trimData } = await supabase
+                .from('trims')
+                .select('stock')
+                .eq('id', trim.trim_id)
+                .maybeSingle();
+              if (trimData) {
+                await supabase
+                  .from('trims')
+                  .update({ stock: (trimData.stock ?? 0) + trim.total_qty })
+                  .eq('id', trim.trim_id);
+              }
+            })());
+          }
+        }
+      }
+      await Promise.all(revertOps);
+
+      // 2. Atualizar OP
       const { data: order, error: orderError } = await supabase
         .from('production_orders')
         .update({
@@ -526,13 +568,13 @@ export function useProductionOrders() {
 
       if (orderError) throw orderError;
 
-      // Deletar itens antigos
-      await supabase
-        .from('production_order_items')
-        .delete()
-        .eq('production_order_id', orderId);
+      // 3. Deletar itens e aviamentos antigos
+      await Promise.all([
+        supabase.from('production_order_items').delete().eq('production_order_id', orderId),
+        supabase.from('production_order_trims').delete().eq('production_order_id', orderId),
+      ]);
 
-      // Criar novos itens
+      // 4. Criar novos itens + variações
       for (const item of orderData.items || []) {
         const { data: orderItem, error: itemError } = await supabase
           .from('production_order_items')
@@ -546,19 +588,67 @@ export function useProductionOrders() {
 
         if (itemError) throw itemError;
 
-        // Criar variações
-        for (const variation of item.variations || []) {
-          await supabase
-            .from('production_order_variations')
-            .insert({
-              item_id: orderItem.id,
-              size: variation.size,
-              color: variation.color,
-              qty: variation.qty,
-              meters_per_piece: variation.meters_per_piece,
-            });
+        const variationsToInsert = (item.variations || []).map((v: any) => ({
+          item_id: orderItem.id,
+          size: v.size,
+          color: v.color,
+          qty: v.qty,
+          meters_per_piece: v.meters_per_piece,
+        }));
+        if (variationsToInsert.length > 0) {
+          await supabase.from('production_order_variations').insert(variationsToInsert);
         }
       }
+
+      // 5. Inserir novos aviamentos
+      const trimsToInsert = (orderData.trims_used || []).map((trim: any) => ({
+        production_order_id: order.id,
+        trim_id: trim.trim_id || null,
+        trim_name: trim.trim_name,
+        qty_per_piece: trim.qty_per_piece,
+        total_qty: trim.total_qty,
+      }));
+      if (trimsToInsert.length > 0) {
+        await supabase.from('production_order_trims').insert(trimsToInsert);
+      }
+
+      // 6. Debitar estoque da nova versão (se não cancelada)
+      const debitOps: Promise<unknown>[] = [];
+      if (!willBeCancelled) {
+        if (orderData.fabric_id && orderData.fabric_meters_consumed > 0) {
+          debitOps.push((async () => {
+            const { data: fabric } = await supabase
+              .from('fabrics')
+              .select('stock')
+              .eq('id', orderData.fabric_id)
+              .maybeSingle();
+            if (fabric) {
+              await supabase
+                .from('fabrics')
+                .update({ stock: Math.max(0, (fabric.stock ?? 0) - orderData.fabric_meters_consumed) })
+                .eq('id', orderData.fabric_id);
+            }
+          })());
+        }
+        for (const trim of orderData.trims_used || []) {
+          if (trim.trim_id && trim.total_qty > 0) {
+            debitOps.push((async () => {
+              const { data: trimData } = await supabase
+                .from('trims')
+                .select('stock')
+                .eq('id', trim.trim_id)
+                .maybeSingle();
+              if (trimData) {
+                await supabase
+                  .from('trims')
+                  .update({ stock: Math.max(0, (trimData.stock ?? 0) - trim.total_qty) })
+                  .eq('id', trim.trim_id);
+              }
+            })());
+          }
+        }
+      }
+      await Promise.all(debitOps);
 
       await fetchData();
       return order;
