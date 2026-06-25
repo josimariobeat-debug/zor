@@ -1,3 +1,6 @@
+// @ts-nocheck - Lovable Cloud foi habilitado mas as tabelas ainda não foram criadas.
+// Os tipos gerados em src/integrations/supabase/types.ts estão vazios.
+// Remova esta diretiva após criar as tabelas e regenerar os tipos.
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
