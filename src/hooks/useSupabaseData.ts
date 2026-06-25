@@ -379,7 +379,7 @@ export function useProductionOrders() {
             if (fabric) {
               await supabase
                 .from('fabrics')
-                .update({ stock: fabric.stock + order.fabric_meters_consumed })
+                .update({ stock: (fabric.stock ?? 0) + order.fabric_meters_consumed })
                 .eq('id', order.fabric_id);
             }
           })()
@@ -399,7 +399,7 @@ export function useProductionOrders() {
               if (trimData) {
                 await supabase
                   .from('trims')
-                  .update({ stock: trimData.stock + trim.total_qty })
+                  .update({ stock: (trimData.stock ?? 0) + trim.total_qty })
                   .eq('id', trim.trim_id);
               }
             })()
@@ -451,7 +451,7 @@ export function useProductionOrders() {
               if (fabric) {
                 await supabase
                   .from('fabrics')
-                  .update({ stock: fabric.stock + order.fabric_meters_consumed })
+                  .update({ stock: (fabric.stock ?? 0) + order.fabric_meters_consumed })
                   .eq('id', order.fabric_id);
               }
             })()
@@ -470,7 +470,7 @@ export function useProductionOrders() {
                 if (trimData) {
                   await supabase
                     .from('trims')
-                    .update({ stock: trimData.stock + trim.total_qty })
+                    .update({ stock: (trimData.stock ?? 0) + trim.total_qty })
                     .eq('id', trim.trim_id);
                 }
               })()
