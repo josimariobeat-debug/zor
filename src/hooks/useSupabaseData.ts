@@ -140,6 +140,8 @@ export function useSupabaseData<T extends { id: string } = Row<TableName>>(table
 // Hook específico para Ordens de Produção (com relacionamentos)
 export function useProductionOrders() {
   const { user } = useAuth();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sb = supabase as any;
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
