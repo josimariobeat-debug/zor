@@ -502,6 +502,7 @@ export type Database = {
           created_at: string
           description: string | null
           fabric_ids: string[] | null
+          fabrics_cost: number | null
           id: string
           image: string | null
           internal_code: string | null
@@ -516,6 +517,7 @@ export type Database = {
           status: string | null
           stock: number | null
           trim_ids: string[] | null
+          trims_cost: number | null
           updated_at: string
           user_id: string
           workshop_id: string | null
@@ -528,6 +530,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           fabric_ids?: string[] | null
+          fabrics_cost?: number | null
           id?: string
           image?: string | null
           internal_code?: string | null
@@ -542,6 +545,7 @@ export type Database = {
           status?: string | null
           stock?: number | null
           trim_ids?: string[] | null
+          trims_cost?: number | null
           updated_at?: string
           user_id: string
           workshop_id?: string | null
@@ -554,6 +558,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           fabric_ids?: string[] | null
+          fabrics_cost?: number | null
           id?: string
           image?: string | null
           internal_code?: string | null
@@ -568,6 +573,7 @@ export type Database = {
           status?: string | null
           stock?: number | null
           trim_ids?: string[] | null
+          trims_cost?: number | null
           updated_at?: string
           user_id?: string
           workshop_id?: string | null
