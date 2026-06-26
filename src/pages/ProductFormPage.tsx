@@ -352,7 +352,7 @@ export default function ProductFormPage() {
                 {/* Preview da imagem */}
                 {form.image &&
                 <div data-ev-id="ev_07a651efae" className="relative w-32 h-32 rounded-lg overflow-hidden border border-stone-200 bg-stone-50">
-                    <img data-ev-id="ev_d58f36e35a" src={form.image} alt="Preview" className="w-full h-full object-cover" />
+                    <ProductImage value={form.image} alt="Preview" className="w-full h-full object-cover" />
                     <button data-ev-id="ev_29467d5d74"
                   type="button"
                   onClick={() => setForm({ ...form, image: '' })}
