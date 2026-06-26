@@ -105,10 +105,11 @@ export default function Products() {
                   <td data-ev-id="ev_d673e9b52e" className="px-5 py-4">
                     <div data-ev-id="ev_9b6500c259" className="flex items-center gap-3">
                       {p.image ?
-                  <img data-ev-id="ev_b7b9137292" src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded-md" /> :
-
-                  <div data-ev-id="ev_718ddfd828" className="w-10 h-10 bg-stone-100 rounded-md" />
-                  }
+                      <ProductImage
+                    value={p.image}
+                    alt={p.name}
+                    className="w-10 h-10 object-cover rounded-md"
+                    fallback={<div className="w-10 h-10 bg-stone-100 rounded-md" />} />
                       <span data-ev-id="ev_be96606e87" className="text-sm font-medium text-stone-900">{p.name}</span>
                     </div>
                   </td>
