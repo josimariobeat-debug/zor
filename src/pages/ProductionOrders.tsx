@@ -8,7 +8,7 @@ import { Plus, Search, Pencil, Trash2, Printer, MoreVertical, XCircle, Loader2, 
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { useProductionOrders } from '@/hooks/useSupabaseData';
 import { useSupabaseData } from '@/hooks/useSupabaseData';
-import { supabase } from '@/integrations/supabase/loose';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { useConfirm } from '@/components/ui/confirm-dialog';

@@ -7,7 +7,6 @@ import { Plus, Search, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { useSupabaseData } from '@/hooks/useSupabaseData';
 import { toast } from '@/hooks/use-toast';
 import { useConfirm } from '@/components/ui/confirm-dialog';
-import { ProductImage } from '@/components/ProductImage';
 
 interface Product {
   id: string;
@@ -104,11 +103,11 @@ export default function Products() {
             <tr data-ev-id="ev_85e50ff09b" key={p.id} className="border-b border-stone-100 last:border-0 hover:bg-stone-50/50">
                   <td data-ev-id="ev_d673e9b52e" className="px-5 py-4">
                     <div data-ev-id="ev_9b6500c259" className="flex items-center gap-3">
-                      <ProductImage
-                    value={p.image}
-                    alt={p.name}
-                    className="w-10 h-10 object-cover rounded-md"
-                    fallback={<div className="w-10 h-10 bg-stone-100 rounded-md" />} />
+                      {p.image ?
+                  <img data-ev-id="ev_b7b9137292" src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded-md" /> :
+
+                  <div data-ev-id="ev_718ddfd828" className="w-10 h-10 bg-stone-100 rounded-md" />
+                  }
                       <span data-ev-id="ev_be96606e87" className="text-sm font-medium text-stone-900">{p.name}</span>
                     </div>
                   </td>

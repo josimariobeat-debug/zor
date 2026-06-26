@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { statusColors, statusLabels } from '@/lib/constants';
 import { Pin, Plus, Trash2, Loader2, Image, Video, X, Upload } from 'lucide-react';
 import { useProductionOrders } from '@/hooks/useSupabaseData';
-import { supabase } from '@/integrations/supabase/loose';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 

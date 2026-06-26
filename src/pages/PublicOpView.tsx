@@ -4,7 +4,7 @@ import { useParams } from 'react-router';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { supabase } from '@/integrations/supabase/loose';
+import { supabase } from '@/integrations/supabase/client';
 import { Check, CheckCircle2, Loader2, Package } from 'lucide-react';
 
 interface DispatchItem {

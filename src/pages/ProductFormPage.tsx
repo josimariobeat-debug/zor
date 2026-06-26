@@ -11,7 +11,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { X, Loader2, Plus, Trash2, Upload, ImageIcon, Layers, Scissors, Users } from 'lucide-react';
-import { ProductImage } from '@/components/ProductImage';
 
 interface Fabric {id: string;name: string;price_per_meter: number;stock: number;}
 interface Trim {id: string;name: string;price_per_unit: number;stock: number;unit: string;}
@@ -86,8 +85,11 @@ export default function ProductFormPage() {
 
       if (uploadError) throw uploadError;
 
-      // Store the storage path; signed URLs are generated on display.
-      setForm((prev) => ({ ...prev, image: fileName }));
+      const { data: { publicUrl } } = supabase.storage.
+      from('product-images').
+      getPublicUrl(fileName);
+
+      setForm((prev) => ({ ...prev, image: publicUrl }));
       toast({ title: 'Sucesso', description: 'Imagem enviada com sucesso!' });
     } catch (error: any) {
       console.error('Upload error:', error);
@@ -353,7 +355,7 @@ export default function ProductFormPage() {
                 {/* Preview da imagem */}
                 {form.image &&
                 <div data-ev-id="ev_07a651efae" className="relative w-32 h-32 rounded-lg overflow-hidden border border-stone-200 bg-stone-50">
-                    <ProductImage value={form.image} alt="Preview" className="w-full h-full object-cover" />
+                    <img data-ev-id="ev_d58f36e35a" src={form.image} alt="Preview" className="w-full h-full object-cover" />
                     <button data-ev-id="ev_29467d5d74"
                   type="button"
                   onClick={() => setForm({ ...form, image: '' })}
