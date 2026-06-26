@@ -53,7 +53,6 @@ export type Database = {
           image: string | null
           launch_date: string | null
           name: string
-          products: number | null
           season: string | null
           status: string | null
           updated_at: string
@@ -67,7 +66,6 @@ export type Database = {
           image?: string | null
           launch_date?: string | null
           name: string
-          products?: number | null
           season?: string | null
           status?: string | null
           updated_at?: string
@@ -81,7 +79,6 @@ export type Database = {
           image?: string | null
           launch_date?: string | null
           name?: string
-          products?: number | null
           season?: string | null
           status?: string | null
           updated_at?: string
@@ -138,11 +135,20 @@ export type Database = {
           user_id?: string
           width?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fabrics_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       op_dispatch_items: {
         Row: {
           color: string | null
+          completed_at: string | null
           completed_qty: number | null
           created_at: string
           dispatch_id: string
@@ -155,6 +161,7 @@ export type Database = {
         }
         Insert: {
           color?: string | null
+          completed_at?: string | null
           completed_qty?: number | null
           created_at?: string
           dispatch_id: string
@@ -167,6 +174,7 @@ export type Database = {
         }
         Update: {
           color?: string | null
+          completed_at?: string | null
           completed_qty?: number | null
           created_at?: string
           dispatch_id?: string
@@ -185,6 +193,13 @@ export type Database = {
             referencedRelation: "op_dispatches"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "op_dispatch_items_variation_id_fkey"
+            columns: ["variation_id"]
+            isOneToOne: false
+            referencedRelation: "production_order_variations"
+            referencedColumns: ["id"]
+          },
         ]
       }
       op_dispatches: {
@@ -192,10 +207,11 @@ export type Database = {
           access_token: string
           completed_pieces: number | null
           created_at: string
+          finished_at: string | null
           id: string
           op_number: string
-          production_order_id: string | null
-          sent_at: string
+          production_order_id: string
+          sent_at: string | null
           status: string | null
           total_pieces: number | null
           updated_at: string
@@ -208,10 +224,11 @@ export type Database = {
           access_token?: string
           completed_pieces?: number | null
           created_at?: string
+          finished_at?: string | null
           id?: string
           op_number: string
-          production_order_id?: string | null
-          sent_at?: string
+          production_order_id: string
+          sent_at?: string | null
           status?: string | null
           total_pieces?: number | null
           updated_at?: string
@@ -224,10 +241,11 @@ export type Database = {
           access_token?: string
           completed_pieces?: number | null
           created_at?: string
+          finished_at?: string | null
           id?: string
           op_number?: string
-          production_order_id?: string | null
-          sent_at?: string
+          production_order_id?: string
+          sent_at?: string | null
           status?: string | null
           total_pieces?: number | null
           updated_at?: string
@@ -244,6 +262,13 @@ export type Database = {
             referencedRelation: "production_orders"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "op_dispatches_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
         ]
       }
       product_fabrics: {
@@ -251,7 +276,7 @@ export type Database = {
           cost: number | null
           created_at: string
           fabric_id: string | null
-          fabric_name: string | null
+          fabric_name: string
           id: string
           meters_used: number | null
           product_id: string
@@ -260,7 +285,7 @@ export type Database = {
           cost?: number | null
           created_at?: string
           fabric_id?: string | null
-          fabric_name?: string | null
+          fabric_name: string
           id?: string
           meters_used?: number | null
           product_id: string
@@ -269,12 +294,19 @@ export type Database = {
           cost?: number | null
           created_at?: string
           fabric_id?: string | null
-          fabric_name?: string | null
+          fabric_name?: string
           id?: string
           meters_used?: number | null
           product_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "product_fabrics_fabric_id_fkey"
+            columns: ["fabric_id"]
+            isOneToOne: false
+            referencedRelation: "fabrics"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "product_fabrics_product_id_fkey"
             columns: ["product_id"]
@@ -292,7 +324,7 @@ export type Database = {
           product_id: string
           quantity: number | null
           trim_id: string | null
-          trim_name: string | null
+          trim_name: string
         }
         Insert: {
           cost?: number | null
@@ -301,7 +333,7 @@ export type Database = {
           product_id: string
           quantity?: number | null
           trim_id?: string | null
-          trim_name?: string | null
+          trim_name: string
         }
         Update: {
           cost?: number | null
@@ -310,7 +342,7 @@ export type Database = {
           product_id?: string
           quantity?: number | null
           trim_id?: string | null
-          trim_name?: string | null
+          trim_name?: string
         }
         Relationships: [
           {
@@ -318,6 +350,13 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_trims_trim_id_fkey"
+            columns: ["trim_id"]
+            isOneToOne: false
+            referencedRelation: "trims"
             referencedColumns: ["id"]
           },
         ]
@@ -346,6 +385,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "production_order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "production_order_items_production_order_id_fkey"
             columns: ["production_order_id"]
             isOneToOne: false
@@ -362,7 +408,7 @@ export type Database = {
           qty_per_piece: number | null
           total_qty: number | null
           trim_id: string | null
-          trim_name: string | null
+          trim_name: string
         }
         Insert: {
           created_at?: string
@@ -371,7 +417,7 @@ export type Database = {
           qty_per_piece?: number | null
           total_qty?: number | null
           trim_id?: string | null
-          trim_name?: string | null
+          trim_name: string
         }
         Update: {
           created_at?: string
@@ -380,7 +426,7 @@ export type Database = {
           qty_per_piece?: number | null
           total_qty?: number | null
           trim_id?: string | null
-          trim_name?: string | null
+          trim_name?: string
         }
         Relationships: [
           {
@@ -388,6 +434,13 @@ export type Database = {
             columns: ["production_order_id"]
             isOneToOne: false
             referencedRelation: "production_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "production_order_trims_trim_id_fkey"
+            columns: ["trim_id"]
+            isOneToOne: false
+            referencedRelation: "trims"
             referencedColumns: ["id"]
           },
         ]
@@ -491,7 +544,22 @@ export type Database = {
           workshop_id?: string | null
           workshop_name?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "production_orders_fabric_id_fkey"
+            columns: ["fabric_id"]
+            isOneToOne: false
+            referencedRelation: "fabrics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "production_orders_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       products: {
         Row: {
@@ -501,7 +569,6 @@ export type Database = {
           cost_price: number | null
           created_at: string
           description: string | null
-          fabric_ids: string[] | null
           fabrics_cost: number | null
           id: string
           image: string | null
@@ -516,7 +583,6 @@ export type Database = {
           sku: string | null
           status: string | null
           stock: number | null
-          trim_ids: string[] | null
           trims_cost: number | null
           updated_at: string
           user_id: string
@@ -529,7 +595,6 @@ export type Database = {
           cost_price?: number | null
           created_at?: string
           description?: string | null
-          fabric_ids?: string[] | null
           fabrics_cost?: number | null
           id?: string
           image?: string | null
@@ -544,7 +609,6 @@ export type Database = {
           sku?: string | null
           status?: string | null
           stock?: number | null
-          trim_ids?: string[] | null
           trims_cost?: number | null
           updated_at?: string
           user_id: string
@@ -557,7 +621,6 @@ export type Database = {
           cost_price?: number | null
           created_at?: string
           description?: string | null
-          fabric_ids?: string[] | null
           fabrics_cost?: number | null
           id?: string
           image?: string | null
@@ -572,58 +635,63 @@ export type Database = {
           sku?: string | null
           status?: string | null
           stock?: number | null
-          trim_ids?: string[] | null
           trims_cost?: number | null
           updated_at?: string
           user_id?: string
           workshop_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       stock_movements: {
         Row: {
           category: string
           created_at: string
-          date: string
           id: string
-          item: string | null
           item_id: string | null
-          item_name: string | null
+          item_name: string
           qty: number
           reason: string | null
           type: string
           unit: string | null
-          updated_at: string
           user_id: string
         }
         Insert: {
           category: string
           created_at?: string
-          date?: string
           id?: string
-          item?: string | null
           item_id?: string | null
-          item_name?: string | null
-          qty?: number
+          item_name: string
+          qty: number
           reason?: string | null
           type: string
           unit?: string | null
-          updated_at?: string
           user_id: string
         }
         Update: {
           category?: string
           created_at?: string
-          date?: string
           id?: string
-          item?: string | null
           item_id?: string | null
-          item_name?: string | null
+          item_name?: string
           qty?: number
           reason?: string | null
           type?: string
           unit?: string | null
-          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -640,7 +708,7 @@ export type Database = {
           phone: string | null
           rating: number | null
           status: string | null
-          type: string | null
+          type: string
           updated_at: string
           user_id: string
         }
@@ -655,7 +723,7 @@ export type Database = {
           phone?: string | null
           rating?: number | null
           status?: string | null
-          type?: string | null
+          type?: string
           updated_at?: string
           user_id: string
         }
@@ -670,11 +738,61 @@ export type Database = {
           phone?: string | null
           rating?: number | null
           status?: string | null
-          type?: string | null
+          type?: string
           updated_at?: string
           user_id?: string
         }
         Relationships: []
+      }
+      technical_sheets: {
+        Row: {
+          created_at: string
+          fabric_cost: number | null
+          id: string
+          labor_cost: number | null
+          product_id: string
+          product_name: string
+          suggested_price: number | null
+          total_cost: number | null
+          trims_cost: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          fabric_cost?: number | null
+          id?: string
+          labor_cost?: number | null
+          product_id: string
+          product_name: string
+          suggested_price?: number | null
+          total_cost?: number | null
+          trims_cost?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          fabric_cost?: number | null
+          id?: string
+          labor_cost?: number | null
+          product_id?: string
+          product_name?: string
+          suggested_price?: number | null
+          total_cost?: number | null
+          trims_cost?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technical_sheets_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       trims: {
         Row: {
@@ -716,7 +834,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "trims_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       workshops: {
         Row: {
@@ -768,11 +894,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      public_finish_dispatch: { Args: { _token: string }; Returns: undefined }
+      public_finish_dispatch: { Args: { _token: string }; Returns: Json }
       public_get_dispatch: { Args: { _token: string }; Returns: Json }
       public_toggle_dispatch_item: {
         Args: { _completed: boolean; _item_id: string; _token: string }
-        Returns: undefined
+        Returns: Json
       }
     }
     Enums: {
