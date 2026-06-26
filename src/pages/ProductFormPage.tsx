@@ -85,11 +85,8 @@ export default function ProductFormPage() {
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage.
-      from('product-images').
-      getPublicUrl(fileName);
-
-      setForm((prev) => ({ ...prev, image: publicUrl }));
+      // Store the storage path; signed URLs are generated on display.
+      setForm((prev) => ({ ...prev, image: fileName }));
       toast({ title: 'Sucesso', description: 'Imagem enviada com sucesso!' });
     } catch (error: any) {
       console.error('Upload error:', error);
