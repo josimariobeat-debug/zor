@@ -7,6 +7,7 @@ import { Plus, Search, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { useSupabaseData } from '@/hooks/useSupabaseData';
 import { toast } from '@/hooks/use-toast';
 import { useConfirm } from '@/components/ui/confirm-dialog';
+import { ProductImage } from '@/components/ProductImage';
 
 interface Product {
   id: string;
