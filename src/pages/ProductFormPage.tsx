@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { X, Loader2, Plus, Trash2, Upload, ImageIcon, Layers, Scissors, Users } from 'lucide-react';
+import { ProductImage } from '@/components/ProductImage';
 
 interface Fabric {id: string;name: string;price_per_meter: number;stock: number;}
 interface Trim {id: string;name: string;price_per_unit: number;stock: number;unit: string;}
