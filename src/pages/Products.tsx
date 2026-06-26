@@ -104,7 +104,6 @@ export default function Products() {
             <tr data-ev-id="ev_85e50ff09b" key={p.id} className="border-b border-stone-100 last:border-0 hover:bg-stone-50/50">
                   <td data-ev-id="ev_d673e9b52e" className="px-5 py-4">
                     <div data-ev-id="ev_9b6500c259" className="flex items-center gap-3">
-                      {p.image ?
                       <ProductImage
                     value={p.image}
                     alt={p.name}
