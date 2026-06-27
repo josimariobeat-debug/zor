@@ -10,44 +10,88 @@ export interface NumberInputProps extends Omit<InputProps, 'value' | 'onChange' 
   allowEmpty?: boolean;
   /** Optional callback fired on blur with the normalized number (or null). */
   onValueBlur?: (value: number | null) => void;
+  /** Casas decimais usadas na máscara pt-BR ao formatar no blur. Padrão: 2. */
+  decimals?: number;
+  /** Aplica máscara pt-BR (1.234,56) ao sair do foco. Padrão: true. */
+  maskPtBR?: boolean;
+}
+
+const DEFAULT_PLACEHOLDER = '1.234,56';
+
+/** Converte string digitada (pt-BR ou en) em número. */
+function parseLocaleNumber(raw: string): number | null {
+  if (!raw) return null;
+  let s = raw.trim();
+  if (s === '' || s === '-' || s === '.' || s === ',' || s === '-.' || s === '-,') return null;
+  // Se tiver vírgula, assumimos pt-BR: remove pontos de milhar e troca vírgula por ponto.
+  if (s.includes(',')) {
+    s = s.replace(/\./g, '').replace(',', '.');
+  }
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+}
+
+function formatPtBR(n: number, decimals: number): string {
+  return n.toLocaleString('pt-BR', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: decimals,
+  });
 }
 
 /**
  * NumberInput: campo numérico controlado que aceita estado vazio durante a edição.
  *
- * Diferente de um <Input type="number"> com `parseFloat(...) || 0`, este componente
- * mantém o conteúdo digitado como string. O usuário pode apagar o valor sem que o
- * zero reapareça. A conversão para número acontece quando há um valor válido (ou
- * no onBlur), preservando a experiência tipo Gmail/Notion.
+ * - O estado interno é sempre `string`, permitindo que o usuário apague o valor
+ *   sem que o zero reapareça.
+ * - Durante o foco, exibe o conteúdo "cru" (com ponto decimal) para edição fluida.
+ * - Ao sair do foco, aplica máscara pt-BR (ex.: 1.234,56).
+ * - Emite `number | null` para o `onChange` do componente pai.
  */
 const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
-  ({ value, onChange, allowEmpty = true, onFocus, onBlur, onValueBlur, ...rest }, ref) => {
-    const toString = React.useCallback(
-      (v: Value) => (v === null || v === undefined || Number.isNaN(v) ? '' : String(v)),
-      []
+  (
+    {
+      value,
+      onChange,
+      allowEmpty = true,
+      onFocus,
+      onBlur,
+      onValueBlur,
+      decimals = 2,
+      maskPtBR = true,
+      placeholder,
+      inputMode,
+      ...rest
+    },
+    ref
+  ) => {
+    const formatDisplay = React.useCallback(
+      (v: Value) => {
+        if (v === null || v === undefined || Number.isNaN(v)) return '';
+        return maskPtBR ? formatPtBR(v as number, decimals) : String(v);
+      },
+      [maskPtBR, decimals]
     );
 
-    const [text, setText] = React.useState<string>(() => toString(value));
+    const [text, setText] = React.useState<string>(() => formatDisplay(value));
     const [focused, setFocused] = React.useState(false);
     const lastEmitted = React.useRef<number | null>(value ?? null);
 
     // Sincroniza com o valor externo apenas quando o usuário não está editando.
-    // Isso evita que o componente "reinjete" o valor (ex.: 0) enquanto a pessoa
-    // está apagando o conteúdo para digitar outro número.
     React.useEffect(() => {
       if (focused) return;
       const incoming = value ?? null;
       if (incoming !== lastEmitted.current) {
-        setText(toString(value));
+        setText(formatDisplay(value));
         lastEmitted.current = incoming;
       }
-    }, [value, focused, toString]);
+    }, [value, focused, formatDisplay]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const raw = e.target.value;
+      // Mantém o texto exatamente como digitado (sem máscara durante a edição).
       setText(raw);
 
-      if (raw === '' || raw === '-' || raw === '.' || raw === '-.') {
+      if (raw === '' || raw === '-' || raw === '.' || raw === ',' || raw === '-.' || raw === '-,') {
         if (allowEmpty) {
           lastEmitted.current = null;
           onChange(null);
@@ -55,8 +99,8 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
         return;
       }
 
-      const parsed = Number(raw);
-      if (Number.isFinite(parsed)) {
+      const parsed = parseLocaleNumber(raw);
+      if (parsed !== null) {
         lastEmitted.current = parsed;
         onChange(parsed);
       }
@@ -64,26 +108,31 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
 
     const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
       setFocused(true);
+      // Mostra valor "cru" para facilitar edição (sem separador de milhar).
+      const parsed = parseLocaleNumber(text);
+      if (parsed !== null) {
+        setText(String(parsed));
+      }
       onFocus?.(e);
     };
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
       setFocused(false);
-      if (text === '' || text === '-' || text === '.' || text === '-.') {
+      const parsed = parseLocaleNumber(text);
+
+      if (parsed === null) {
         if (!allowEmpty) {
-          setText('0');
+          setText(formatDisplay(0));
           lastEmitted.current = 0;
           onChange(0);
           onValueBlur?.(0);
         } else {
+          setText('');
           onValueBlur?.(null);
         }
       } else {
-        const parsed = Number(text);
-        if (Number.isFinite(parsed)) {
-          setText(String(parsed));
-          onValueBlur?.(parsed);
-        }
+        setText(formatDisplay(parsed));
+        onValueBlur?.(parsed);
       }
       onBlur?.(e);
     };
@@ -91,12 +140,13 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
     return (
       <Input
         ref={ref}
-        type="number"
-        inputMode="decimal"
+        type="text"
+        inputMode={inputMode ?? 'decimal'}
         value={text}
         onChange={handleChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        placeholder={placeholder ?? DEFAULT_PLACEHOLDER}
         {...rest}
       />
     );
