@@ -214,7 +214,7 @@ export default function FabricFormPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-stone-900 mb-1.5">Estoque mínimo (m)</label>
-              <Input type="number" step="0.1" value={form.min_stock} onChange={(e) => setForm({ ...form, min_stock: parseFloat(e.target.value) || 0 })} min={0} />
+              <NumberInput step="0.1" value={form.min_stock} onChange={(v) => setForm({ ...form, min_stock: v ?? 0 })} min={0} placeholder="0" />
             </div>
             <div>
               <label className="block text-sm font-medium text-stone-900 mb-1.5">Custo operacional (R$)</label>
