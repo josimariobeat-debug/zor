@@ -1,3 +1,4 @@
+import ScissorsLoader from '@/components/ScissorsLoader';
 // @ts-nocheck
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';

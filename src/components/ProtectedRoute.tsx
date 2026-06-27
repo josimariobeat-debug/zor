@@ -1,3 +1,4 @@
+import ScissorsLoader from '@/components/ScissorsLoader';
 import { Navigate } from 'react-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2 } from 'lucide-react';

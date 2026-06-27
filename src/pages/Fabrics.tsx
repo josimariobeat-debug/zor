@@ -1,3 +1,4 @@
+import ScissorsLoader from '@/components/ScissorsLoader';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Card } from '@/components/ui/card';

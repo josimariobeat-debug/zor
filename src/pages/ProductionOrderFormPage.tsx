@@ -1,3 +1,4 @@
+import ScissorsLoader from '@/components/ScissorsLoader';
 /* eslint-disable @typescript-eslint/no-explicit-any, react-hooks/exhaustive-deps */
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router';

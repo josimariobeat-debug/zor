@@ -1,3 +1,4 @@
+import ScissorsLoader from '@/components/ScissorsLoader';
 // @ts-nocheck
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useMemo, useRef } from 'react';
