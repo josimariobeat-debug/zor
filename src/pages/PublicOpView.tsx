@@ -5,12 +5,13 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
-import { Check, CheckCircle2, Loader2, Package, Shirt } from 'lucide-react';
+import { Check, CheckCircle2, Loader2, Package, Shirt, X } from 'lucide-react';
 import logoAsset from '@/assets/default-logo.png.asset.json';
 
 interface DispatchItem {
   id: string;
   product_name: string;
+  product_image: string | null;
   size: string | null;
   color: string | null;
   qty: number;
