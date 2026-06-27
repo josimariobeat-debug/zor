@@ -91,7 +91,7 @@ export default function Fabrics() {
           <table data-ev-id="ev_7e6cd8f129" className="w-full">
             <thead data-ev-id="ev_a29e266e46">
               <tr data-ev-id="ev_eba2c71207" className="border-b border-stone-200 bg-stone-50/50">
-                {['Nome', 'Tipo', 'Cor', 'Estoque', 'R$/Metro', 'Localização', ''].map((h) =>
+                {['Nome', 'Tipo', 'Cor', 'Estoque', 'Custo/m', 'Localização', ''].map((h) =>
               <th data-ev-id="ev_c02bbe74b8" key={h} className="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-stone-500">
                     {h}
                   </th>
