@@ -348,24 +348,6 @@ export default function ProductionOrderFormPage() {
             )}
           </Card>
 
-          {/* Aviamentos consumidos (consolidado dos produtos) */}
-          {trimsUsed.length > 0 && (
-            <Card className="p-5 border-stone-200">
-              <div className="flex items-center gap-2 mb-3">
-                <Scissors className="w-4 h-4 text-stone-500" />
-                <h2 className="text-base font-semibold text-stone-900">Aviamentos a debitar</h2>
-              </div>
-              <div className="flex flex-col gap-1.5 text-sm">
-                {trimsUsed.map((t) => (
-                  <div key={t.trim_id} className="flex justify-between border-b border-stone-100 last:border-0 pb-1.5">
-                    <span className="text-stone-700">{t.trim_name}</span>
-                    <span className="text-stone-900 font-medium">{t.total_qty} un.</span>
-                  </div>
-                ))}
-              </div>
-              <p className="text-xs text-stone-500 mt-3">O saldo destes aviamentos será debitado do estoque ao salvar a OP.</p>
-            </Card>
-          )}
 
 
           {/* Produtos da OP */}
