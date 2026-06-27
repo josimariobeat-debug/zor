@@ -7,6 +7,7 @@ import { Plus, Search, AlertCircle, Pencil, Trash2, Loader2 } from 'lucide-react
 import { useSupabaseData } from '@/hooks/useSupabaseData';
 import { toast } from '@/hooks/use-toast';
 import { useConfirm } from '@/components/ui/confirm-dialog';
+import { getFabricUnitCost } from '@/lib/fabric-cost';
 
 interface Fabric {
   id: string;
@@ -18,9 +19,11 @@ interface Fabric {
   gramatura: number;
   stock: number;
   price_per_meter: number;
+  operational_cost: number | null;
   location: string | null;
   min_stock: number | null;
 }
+
 
 export default function Fabrics() {
   const navigate = useNavigate();
