@@ -92,7 +92,7 @@ export default function SupplierFormPage() {
 
   if (loading && isEditing) {
     return (
-      <div data-ev-id="ev_6234ca9bb8" className="flex items-center justify-center h-64">
+      <div data-ev-id="ev_6234ca9bb8" className="flex items-center justify-center min-h-[70vh]">
         <ScissorsLoader />
       </div>);
 

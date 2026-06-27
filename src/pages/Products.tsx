@@ -60,7 +60,7 @@ export default function Products() {
 
   if (loading) {
     return (
-      <div data-ev-id="ev_4a04073215" className="flex items-center justify-center h-64">
+      <div data-ev-id="ev_4a04073215" className="flex items-center justify-center min-h-[70vh]">
         <ScissorsLoader />
       </div>);
 

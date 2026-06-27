@@ -55,7 +55,7 @@ export default function Trims() {
 
   if (loading) {
     return (
-      <div data-ev-id="ev_e887aabcd7" className="flex items-center justify-center h-64">
+      <div data-ev-id="ev_e887aabcd7" className="flex items-center justify-center min-h-[70vh]">
         <ScissorsLoader />
       </div>);
 

@@ -289,7 +289,7 @@ export default function ProductionOrderFormPage() {
 
   if (opLoading && isEditing && !loaded) {
     return (
-      <div data-ev-id="ev_a16e78b051" className="flex items-center justify-center h-64">
+      <div data-ev-id="ev_a16e78b051" className="flex items-center justify-center min-h-[70vh]">
         <ScissorsLoader />
       </div>);
 

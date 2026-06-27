@@ -143,7 +143,7 @@ export default function FabricFormPage() {
 
   if (loading && isEditing) {
     return (
-      <div data-ev-id="ev_a10b7a9806" className="flex items-center justify-center h-64">
+      <div data-ev-id="ev_a10b7a9806" className="flex items-center justify-center min-h-[70vh]">
         <ScissorsLoader />
       </div>);
 
