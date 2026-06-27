@@ -94,7 +94,6 @@ export default function Products() {
                 {[
                 { label: 'Produto', cls: '' },
                 { label: 'SKU', cls: 'hidden xl:table-cell' },
-                { label: 'Categoria', cls: 'hidden lg:table-cell' },
                 { label: 'Tamanhos', cls: 'hidden xl:table-cell' },
                 
                 { label: 'MO', cls: 'hidden lg:table-cell' },
@@ -123,7 +122,6 @@ export default function Products() {
                     </div>
                   </td>
                   <td data-ev-id="ev_e39c5737e5" className="px-3 lg:px-5 py-4 text-sm text-stone-600 hidden xl:table-cell">{p.sku || '-'}</td>
-                  <td data-ev-id="ev_c70b1baa10" className="px-3 lg:px-5 py-4 text-sm text-stone-600 hidden lg:table-cell">{p.category || '-'}</td>
                   <td data-ev-id="ev_776d24a63f" className="px-3 lg:px-5 py-4 text-sm text-stone-600 hidden xl:table-cell">{(p.sizes || []).join(', ') || '-'}</td>
                   
                   <td data-ev-id="ev_mo_cell" className="px-3 lg:px-5 py-4 text-sm text-stone-600 hidden lg:table-cell whitespace-nowrap">R$ {(p.labor_cost || 0).toFixed(2)}</td>
