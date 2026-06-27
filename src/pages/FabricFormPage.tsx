@@ -99,10 +99,9 @@ export default function FabricFormPage() {
       toast({ title: 'Erro', description: 'Nome é obrigatório', variant: 'destructive' });
       return;
     }
-    const opCheck = validateOperationalCost(operationalCostInput);
-    if (!opCheck.valid) {
-      setOperationalCostError(opCheck.error);
-      toast({ title: 'Erro', description: opCheck.error ?? 'Custo operacional inválido', variant: 'destructive' });
+    if (form.operational_cost < 0) {
+      setOperationalCostError('O valor não pode ser negativo.');
+      toast({ title: 'Erro', description: 'O custo operacional não pode ser negativo.', variant: 'destructive' });
       return;
     }
     setOperationalCostError(null);
@@ -111,10 +110,12 @@ export default function FabricFormPage() {
     try {
       const data = {
         ...form,
-        operational_cost: opCheck.value,
+        operational_cost: form.operational_cost,
         width: form.width / 100,
         supplier_id: form.supplier_id || null
       };
+
+
 
 
       if (isEditing) {
