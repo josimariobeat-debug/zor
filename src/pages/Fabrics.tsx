@@ -43,7 +43,7 @@ export default function Fabrics() {
       { label: 'Tipo', value: f.type || '-' },
       { label: 'Cor', value: f.color || '-' },
       { label: 'Estoque', value: `${f.stock}m` },
-      { label: 'Preço/m', value: `R$ ${(f.price_per_meter || 0).toFixed(2)}` }],
+      { label: 'Custo/m', value: `R$ ${getFabricUnitCost(f).toFixed(2)}` }],
 
       itemType: 'Tecido'
     });
