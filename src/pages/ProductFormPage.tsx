@@ -474,7 +474,7 @@ export default function ProductFormPage() {
                         {trims.map((tr) => <SelectItem key={tr.id} value={tr.id}>{tr.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
-                    <Input type="number" step="0.1" value={t.quantity} onChange={(e) => updateTrim(idx, 'quantity', parseFloat(e.target.value) || 0)} min={0} />
+                    <NumberInput step="0.1" value={t.quantity} onChange={(v) => updateTrim(idx, 'quantity', v ?? 0)} min={0} placeholder="0" />
                     <Input value={`R$ ${t.cost.toFixed(2)}`} disabled className="bg-stone-50" />
                     <button data-ev-id="ev_ca167c495e" type="button" onClick={() => removeTrim(idx)} className="p-2 text-stone-400 hover:text-rose-500 transition-colors">
                       <Trash2 className="w-4 h-4" />
