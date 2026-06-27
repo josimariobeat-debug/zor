@@ -21,25 +21,27 @@ export interface NumberInputProps extends Omit<InputProps, 'value' | 'onChange' 
  * no onBlur), preservando a experiência tipo Gmail/Notion.
  */
 const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
-  ({ value, onChange, allowEmpty = true, onBlur, onValueBlur, ...rest }, ref) => {
+  ({ value, onChange, allowEmpty = true, onFocus, onBlur, onValueBlur, ...rest }, ref) => {
     const toString = React.useCallback(
       (v: Value) => (v === null || v === undefined || Number.isNaN(v) ? '' : String(v)),
       []
     );
 
     const [text, setText] = React.useState<string>(() => toString(value));
+    const [focused, setFocused] = React.useState(false);
     const lastEmitted = React.useRef<number | null>(value ?? null);
 
-    // Mantém o input em sincronia quando o valor externo realmente muda
-    // (ex.: carga inicial do registro, reset do formulário). Não sobrescreve
-    // a digitação em andamento quando o valor externo equivale ao último emitido.
+    // Sincroniza com o valor externo apenas quando o usuário não está editando.
+    // Isso evita que o componente "reinjete" o valor (ex.: 0) enquanto a pessoa
+    // está apagando o conteúdo para digitar outro número.
     React.useEffect(() => {
+      if (focused) return;
       const incoming = value ?? null;
       if (incoming !== lastEmitted.current) {
         setText(toString(value));
         lastEmitted.current = incoming;
       }
-    }, [value, toString]);
+    }, [value, focused, toString]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const raw = e.target.value;
@@ -60,16 +62,21 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
       }
     };
 
+    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+      setFocused(true);
+      onFocus?.(e);
+    };
+
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      setFocused(false);
       if (text === '' || text === '-' || text === '.' || text === '-.') {
-        if (allowEmpty) {
-          onValueBlur?.(null);
-        } else {
-          // sem allowEmpty, normaliza para 0
+        if (!allowEmpty) {
           setText('0');
           lastEmitted.current = 0;
           onChange(0);
           onValueBlur?.(0);
+        } else {
+          onValueBlur?.(null);
         }
       } else {
         const parsed = Number(text);
@@ -88,6 +95,7 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
         inputMode="decimal"
         value={text}
         onChange={handleChange}
+        onFocus={handleFocus}
         onBlur={handleBlur}
         {...rest}
       />
