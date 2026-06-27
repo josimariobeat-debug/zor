@@ -40,7 +40,7 @@ export default function Trims() {
       context: [
       { label: 'Tipo', value: t.type || '-' },
       { label: 'Estoque', value: `${t.stock} ${t.unit}` },
-      { label: 'Preço/un', value: `R$ ${(t.price_per_unit || 0).toFixed(2)}` }],
+      { label: 'Custo/un', value: `R$ ${getTrimUnitCost(t).toFixed(2)}` }],
 
       itemType: 'Aviamento'
     });
