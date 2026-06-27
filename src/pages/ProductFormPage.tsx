@@ -205,7 +205,6 @@ export default function ProductFormPage() {
         collection_id: form.collection_id || null,
         colors: form.colors.split(',').map((c) => c.trim()).filter(Boolean),
         sizes: form.sizes.split(',').map((s) => s.trim().toUpperCase()).filter(Boolean),
-        stock: form.stock,
         status: form.status,
         description: form.description || null,
         image: form.image || null,
