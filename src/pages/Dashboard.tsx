@@ -14,8 +14,8 @@ interface FinishedDispatch {
   id: string;
   op_number: string;
   workshop_name: string | null;
-  finished_at: string;
-  total_pieces: number;
+  finished_at: string | null;
+  total_pieces: number | null;
 }
 
 const STORAGE_KEY = 'read_op_notifications';

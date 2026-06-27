@@ -18,9 +18,9 @@ interface Dispatch {
   workshop_name: string | null;
   workshop_phone: string | null;
   access_token: string;
-  status: string;
-  total_pieces: number;
-  completed_pieces: number;
+  status: string | null;
+  total_pieces: number | null;
+  completed_pieces: number | null;
   sent_at: string;
   finished_at: string | null;
 }

@@ -134,11 +134,11 @@ export default function ProductFormPage() {
           sale_price: product.sale_price || 0
         });
 
-        supabase.from('product_fabrics').select('*').eq('product_id', id).then(({ data }) => {
+        supabase.from('product_fabrics').select('*').eq('product_id', id!).then(({ data }) => {
           if (data) setFabricsUsed(data.map((f: any) => ({ ...f, id: f.id })));
         });
 
-        supabase.from('product_trims').select('*').eq('product_id', id).then(({ data }) => {
+        supabase.from('product_trims').select('*').eq('product_id', id!).then(({ data }) => {
           if (data) setTrimsUsed(data.map((t: any) => ({ ...t, id: t.id })));
         });
       }
@@ -231,7 +231,7 @@ export default function ProductFormPage() {
       let productId = id;
 
       if (isEditing) {
-        const { error } = await supabase.from('products').update(productData).eq('id', id);
+        const { error } = await supabase.from('products').update(productData).eq('id', id!);
         if (error) throw error;
       } else {
         const { data, error } = await supabase.from('products').insert(productData).select().single();
@@ -244,7 +244,7 @@ export default function ProductFormPage() {
       }
       if (fabricsUsed.length > 0) {
         const fabricsData = fabricsUsed.filter((f) => f.fabric_id).map((f) => ({
-          product_id: productId,
+          product_id: productId!,
           fabric_id: f.fabric_id,
           fabric_name: f.fabric_name,
           meters_used: f.meters_used,
@@ -261,7 +261,7 @@ export default function ProductFormPage() {
       }
       if (trimsUsed.length > 0) {
         const trimsData = trimsUsed.filter((t) => t.trim_id).map((t) => ({
-          product_id: productId,
+          product_id: productId!,
           trim_id: t.trim_id,
           trim_name: t.trim_name,
           quantity: t.quantity,
