@@ -27,7 +27,7 @@ interface Product {
   trims_cost?: number;
   labor_cost?: number;
 }
-interface Fabric {id: string;name: string;stock: number;price_per_meter: number;}
+interface Fabric {id: string;name: string;stock: number;price_per_meter: number;operational_cost?: number | null;}
 interface Workshop {id: string;name: string;price_per_piece: number;}
 
 interface Variation {size: string;color: string;qty: number;meters_per_piece: number;}
