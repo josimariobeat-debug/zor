@@ -196,7 +196,7 @@ export default function FabricFormPage() {
             </div>
             <div data-ev-id="ev_771fad0c81">
               <label data-ev-id="ev_4d757ba4a7" className="block text-sm font-medium text-stone-900 mb-1.5">Largura (cm)</label>
-              <Input type="number" step="1" value={form.width} onChange={(e) => setForm({ ...form, width: parseFloat(e.target.value) || 0 })} min={0} />
+              <NumberInput step="1" value={form.width} onChange={(v) => setForm({ ...form, width: v ?? 0 })} min={0} placeholder="150" />
             </div>
           </div>
 
