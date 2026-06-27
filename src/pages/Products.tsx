@@ -88,7 +88,8 @@ export default function Products() {
         </Card> :
 
       <Card className="bg-white border-stone-200/80 shadow-none overflow-hidden">
-          <table data-ev-id="ev_e420591a31" className="w-full">
+          <div data-ev-id="ev_scroll_wrap" className="w-full overflow-x-auto">
+          <table data-ev-id="ev_e420591a31" className="w-full min-w-[960px]">
             <thead data-ev-id="ev_15869704e5">
               <tr data-ev-id="ev_526669bb53" className="border-b border-stone-200 bg-stone-50/50">
                 {['Produto', 'SKU', 'Categoria', 'Tamanhos', 'Estoque', 'Custo', 'Venda', 'Status', ''].map((h) =>
@@ -136,6 +137,7 @@ export default function Products() {
             )}
             </tbody>
           </table>
+          </div>
         </Card>
       }
     </div>);
