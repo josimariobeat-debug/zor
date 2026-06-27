@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { NumberInput } from '@/components/ui/number-input';
 import { Label } from '@/components/ui/label';
 import { Plus, Trash2, Calculator as CalcIcon } from 'lucide-react';
 import { mockFabrics, mockProducts } from '@/lib/mock-data';
