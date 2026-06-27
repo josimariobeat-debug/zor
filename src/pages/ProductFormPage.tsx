@@ -513,7 +513,7 @@ export default function ProductFormPage() {
               </div>
               <div data-ev-id="ev_fd27755b6c">
                 <label data-ev-id="ev_a629fcbd42" className="block text-sm font-medium text-stone-900 mb-1.5">Preço de Venda (R$)</label>
-                <NumberInput step="0.01" value={form.sale_price} onChange={(v) => setForm({ ...form, sale_price: v ?? 0 })} min={0} placeholder="0,00" />
+                <NumberInput variant="currency" value={form.sale_price} onChange={(v) => setForm({ ...form, sale_price: v ?? 0 })} />
               </div>
             </div>
 
