@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { Input } from '@/components/ui/input';
+import { NumberInput } from '@/components/ui/number-input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
@@ -133,7 +134,7 @@ export default function CollectionFormPage() {
             </div>
             <div data-ev-id="ev_52759fbeda">
               <label data-ev-id="ev_df86fb7103" className="block text-sm font-medium text-stone-900 mb-1.5">Meta de Vendas (R$)</label>
-              <Input type="number" step="0.01" value={form.goal} onChange={(e) => setForm({ ...form, goal: parseFloat(e.target.value) || 0 })} min={0} />
+              <NumberInput step="0.01" value={form.goal} onChange={(v) => setForm({ ...form, goal: v ?? 0 })} min={0} placeholder="0,00" />
             </div>
             <div data-ev-id="ev_d7c619b0a6">
               <label data-ev-id="ev_c1cbe2ab58" className="block text-sm font-medium text-stone-900 mb-1.5">Status</label>

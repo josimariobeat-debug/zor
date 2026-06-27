@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { NumberInput } from '@/components/ui/number-input';
 import { Label } from '@/components/ui/label';
 import { Plus, Trash2, Calculator as CalcIcon } from 'lucide-react';
 import { mockFabrics, mockProducts } from '@/lib/mock-data';
@@ -50,8 +51,8 @@ export default function FabricCalculator() {
                   {fabrics.map((f) => <option data-ev-id="ev_9668531aba" key={f.id} value={f.id}>{f.name} — {f.color}</option>)}
                 </select>
               </div>
-              <div data-ev-id="ev_624a018308"><Label className="text-xs text-stone-600">Total de metros</Label><Input type="number" value={meters} onChange={(e) => setMeters(+e.target.value || 0)} className="mt-1" /></div>
-              <div data-ev-id="ev_b49dec8acc"><Label className="text-xs text-stone-600">% Desperdício</Label><Input type="number" value={wastePct} onChange={(e) => setWastePct(+e.target.value || 0)} className="mt-1" /></div>
+              <div data-ev-id="ev_624a018308"><Label className="text-xs text-stone-600">Total de metros</Label><NumberInput value={meters} onChange={(v) => setMeters(v ?? 0)} className="mt-1" placeholder="0" /></div>
+              <div data-ev-id="ev_b49dec8acc"><Label className="text-xs text-stone-600">% Desperdício</Label><NumberInput value={wastePct} onChange={(v) => setWastePct(v ?? 0)} className="mt-1" placeholder="0" /></div>
             </div>
           </Card>
           <Card className="p-6 bg-white border-stone-200/80 shadow-none">
@@ -67,7 +68,7 @@ export default function FabricCalculator() {
                     <select data-ev-id="ev_62f8d58f65" value={it.product_id} onChange={(e) => setItems(items.map((i) => i.id === it.id ? { ...i, product_id: e.target.value } : i))} className="flex-1 h-9 px-2 rounded-md border border-stone-200 bg-white text-sm">
                       {products.map((p) => <option data-ev-id="ev_4c0c703628" key={p.id} value={p.id}>{p.name}</option>)}
                     </select>
-                    <Input type="number" value={it.qty} onChange={(e) => setItems(items.map((i) => i.id === it.id ? { ...i, qty: +e.target.value || 0 } : i))} className="w-24 h-9" />
+                    <NumberInput value={it.qty} onChange={(val) => setItems(items.map((i) => i.id === it.id ? { ...i, qty: val ?? 0 } : i))} className="w-24 h-9" placeholder="0" />
                     <span data-ev-id="ev_11fda24660" className="text-xs text-stone-500 w-20">{p ? ((p.meters_per_unit || 0) * it.qty).toFixed(2) : 0}m</span>
                     <button data-ev-id="ev_b05840c84d" onClick={() => removeItem(it.id)} className="p-1.5 text-stone-400 hover:text-rose-700 rounded"><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>);

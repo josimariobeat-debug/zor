@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { Input } from '@/components/ui/input';
+import { NumberInput } from '@/components/ui/number-input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { useSupabaseData } from '@/hooks/useSupabaseData';
@@ -191,29 +192,29 @@ export default function FabricFormPage() {
           <div data-ev-id="ev_2284431774" className="grid grid-cols-2 gap-4">
             <div data-ev-id="ev_64e017681c">
               <label data-ev-id="ev_aaf7a4ee40" className="block text-sm font-medium text-stone-900 mb-1.5">Valor/metro (R$)</label>
-              <Input type="number" step="0.01" value={form.price_per_meter} onChange={(e) => setForm({ ...form, price_per_meter: parseFloat(e.target.value) || 0 })} min={0} />
+              <NumberInput step="0.01" value={form.price_per_meter} onChange={(v) => setForm({ ...form, price_per_meter: v ?? 0 })} min={0} placeholder="0,00" />
             </div>
             <div data-ev-id="ev_771fad0c81">
               <label data-ev-id="ev_4d757ba4a7" className="block text-sm font-medium text-stone-900 mb-1.5">Largura (cm)</label>
-              <Input type="number" step="1" value={form.width} onChange={(e) => setForm({ ...form, width: parseFloat(e.target.value) || 0 })} min={0} />
+              <NumberInput step="1" value={form.width} onChange={(v) => setForm({ ...form, width: v ?? 0 })} min={0} placeholder="150" />
             </div>
           </div>
 
           <div data-ev-id="ev_df081891db" className="grid grid-cols-2 gap-4">
             <div data-ev-id="ev_28338a01bd">
               <label data-ev-id="ev_1f8a48552d" className="block text-sm font-medium text-stone-900 mb-1.5">Gramatura (g/m²)</label>
-              <Input type="number" value={form.gramatura} onChange={(e) => setForm({ ...form, gramatura: parseInt(e.target.value) || 0 })} min={0} />
+              <NumberInput value={form.gramatura} onChange={(v) => setForm({ ...form, gramatura: v ?? 0 })} min={0} placeholder="0" />
             </div>
             <div data-ev-id="ev_47934e0717">
               <label data-ev-id="ev_578d988d6c" className="block text-sm font-medium text-stone-900 mb-1.5">Quantidade (metros)</label>
-              <Input type="number" step="0.1" value={form.stock} onChange={(e) => setForm({ ...form, stock: parseFloat(e.target.value) || 0 })} min={0} />
+              <NumberInput step="0.1" value={form.stock} onChange={(v) => setForm({ ...form, stock: v ?? 0 })} min={0} placeholder="0" />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-stone-900 mb-1.5">Estoque mínimo (m)</label>
-              <Input type="number" step="0.1" value={form.min_stock} onChange={(e) => setForm({ ...form, min_stock: parseFloat(e.target.value) || 0 })} min={0} />
+              <NumberInput step="0.1" value={form.min_stock} onChange={(v) => setForm({ ...form, min_stock: v ?? 0 })} min={0} placeholder="0" />
             </div>
             <div>
               <label className="block text-sm font-medium text-stone-900 mb-1.5">Custo operacional (R$)</label>

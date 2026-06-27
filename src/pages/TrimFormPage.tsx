@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { Input } from '@/components/ui/input';
+import { NumberInput } from '@/components/ui/number-input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { useSupabaseData } from '@/hooks/useSupabaseData';
@@ -158,15 +159,15 @@ export default function TrimFormPage() {
           <div data-ev-id="ev_ce56660158" className="grid grid-cols-3 gap-4">
             <div data-ev-id="ev_0afb977968">
               <label data-ev-id="ev_ab087fc1ce" className="block text-sm font-medium text-stone-900 mb-1.5">Estoque Atual</label>
-              <Input type="number" step="0.1" value={form.stock} onChange={(e) => setForm({ ...form, stock: parseFloat(e.target.value) || 0 })} min={0} />
+              <NumberInput step="0.1" value={form.stock} onChange={(v) => setForm({ ...form, stock: v ?? 0 })} min={0} placeholder="0" />
             </div>
             <div data-ev-id="ev_a2639feafb">
               <label data-ev-id="ev_074b197967" className="block text-sm font-medium text-stone-900 mb-1.5">Estoque Mínimo</label>
-              <Input type="number" step="0.1" value={form.min_stock} onChange={(e) => setForm({ ...form, min_stock: parseFloat(e.target.value) || 0 })} min={0} />
+              <NumberInput step="0.1" value={form.min_stock} onChange={(v) => setForm({ ...form, min_stock: v ?? 0 })} min={0} placeholder="0" />
             </div>
             <div data-ev-id="ev_fc1afc0370">
               <label data-ev-id="ev_4be7786ff2" className="block text-sm font-medium text-stone-900 mb-1.5">Preço Unit. (R$)</label>
-              <Input type="number" step="0.01" value={form.price_per_unit} onChange={(e) => setForm({ ...form, price_per_unit: parseFloat(e.target.value) || 0 })} min={0} />
+              <NumberInput step="0.01" value={form.price_per_unit} onChange={(v) => setForm({ ...form, price_per_unit: v ?? 0 })} min={0} placeholder="0,00" />
             </div>
           </div>
 

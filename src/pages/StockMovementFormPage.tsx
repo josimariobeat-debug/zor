@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { FormPageShell, FormSection, FormGrid, FormField } from '@/components/forms/FormPageShell';
 import { Input } from '@/components/ui/input';
+import { NumberInput } from '@/components/ui/number-input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { useSupabaseData } from '@/hooks/useSupabaseData';
@@ -135,12 +136,12 @@ export default function StockMovementFormPage() {
             </Select>
           </FormField>
           <FormField label={`Quantidade (${unit})`}>
-            <Input
-              type="number"
+            <NumberInput
               step="0.1"
               value={form.qty}
-              onChange={(e) => setForm({ ...form, qty: parseFloat(e.target.value) || 0 })}
-              min={0} />
+              onChange={(v) => setForm({ ...form, qty: v ?? 0 })}
+              min={0}
+              placeholder="0" />
 
           </FormField>
         </FormGrid>

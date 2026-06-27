@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { Input } from '@/components/ui/input';
+import { NumberInput } from '@/components/ui/number-input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -434,7 +435,7 @@ export default function ProductFormPage() {
                         {fabrics.map((fab) => <SelectItem key={fab.id} value={fab.id}>{fab.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
-                    <Input type="number" step="0.01" value={f.meters_used} onChange={(e) => updateFabric(idx, 'meters_used', parseFloat(e.target.value) || 0)} min={0} />
+                    <NumberInput step="0.01" value={f.meters_used} onChange={(v) => updateFabric(idx, 'meters_used', v ?? 0)} min={0} placeholder="0,00" />
                     <Input value={`R$ ${f.cost.toFixed(2)}`} disabled className="bg-stone-50" />
                     <button data-ev-id="ev_bfb7613200" type="button" onClick={() => removeFabric(idx)} className="p-2 text-stone-400 hover:text-rose-500 transition-colors">
                       <Trash2 className="w-4 h-4" />
@@ -473,7 +474,7 @@ export default function ProductFormPage() {
                         {trims.map((tr) => <SelectItem key={tr.id} value={tr.id}>{tr.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
-                    <Input type="number" step="0.1" value={t.quantity} onChange={(e) => updateTrim(idx, 'quantity', parseFloat(e.target.value) || 0)} min={0} />
+                    <NumberInput step="0.1" value={t.quantity} onChange={(v) => updateTrim(idx, 'quantity', v ?? 0)} min={0} placeholder="0" />
                     <Input value={`R$ ${t.cost.toFixed(2)}`} disabled className="bg-stone-50" />
                     <button data-ev-id="ev_ca167c495e" type="button" onClick={() => removeTrim(idx)} className="p-2 text-stone-400 hover:text-rose-500 transition-colors">
                       <Trash2 className="w-4 h-4" />
@@ -503,15 +504,15 @@ export default function ProductFormPage() {
               </div>
               <div data-ev-id="ev_123f4916d1">
                 <label data-ev-id="ev_d6e4f7ff21" className="block text-sm font-medium text-stone-900 mb-1.5">Mão de Obra (R$)</label>
-                <Input type="number" step="0.01" value={form.labor_cost} onChange={(e) => setForm({ ...form, labor_cost: parseFloat(e.target.value) || 0 })} min={0} />
+                <NumberInput step="0.01" value={form.labor_cost} onChange={(v) => setForm({ ...form, labor_cost: v ?? 0 })} min={0} placeholder="0,00" />
               </div>
               <div data-ev-id="ev_34b833be49">
                 <label data-ev-id="ev_b7ab667f94" className="block text-sm font-medium text-stone-900 mb-1.5">Custo Operacional (R$)</label>
-                <Input type="number" step="0.01" value={form.operational_cost} onChange={(e) => setForm({ ...form, operational_cost: parseFloat(e.target.value) || 0 })} min={0} />
+                <NumberInput step="0.01" value={form.operational_cost} onChange={(v) => setForm({ ...form, operational_cost: v ?? 0 })} min={0} placeholder="0,00" />
               </div>
               <div data-ev-id="ev_fd27755b6c">
                 <label data-ev-id="ev_a629fcbd42" className="block text-sm font-medium text-stone-900 mb-1.5">Preço de Venda (R$)</label>
-                <Input type="number" step="0.01" value={form.sale_price} onChange={(e) => setForm({ ...form, sale_price: parseFloat(e.target.value) || 0 })} min={0} />
+                <NumberInput step="0.01" value={form.sale_price} onChange={(v) => setForm({ ...form, sale_price: v ?? 0 })} min={0} placeholder="0,00" />
               </div>
             </div>
 
