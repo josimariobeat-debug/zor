@@ -18,9 +18,9 @@ interface Dispatch {
   workshop_name: string | null;
   workshop_phone: string | null;
   access_token: string;
-  status: string;
-  total_pieces: number;
-  completed_pieces: number;
+  status: string | null;
+  total_pieces: number | null;
+  completed_pieces: number | null;
   sent_at: string;
   finished_at: string | null;
 }
@@ -131,7 +131,9 @@ export default function OpsEnviadas() {
 
       <div data-ev-id="ev_b8d4fba5d7" className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {dispatches.map((d) => {
-          const pct = d.total_pieces > 0 ? Math.round(d.completed_pieces / d.total_pieces * 100) : 0;
+          const total = d.total_pieces ?? 0;
+          const completed = d.completed_pieces ?? 0;
+          const pct = total > 0 ? Math.round(completed / total * 100) : 0;
           const isNew = d.status === 'finalizado' && d.finished_at &&
           new Date().getTime() - new Date(d.finished_at).getTime() < 3600000; // Última hora
 
@@ -150,7 +152,7 @@ export default function OpsEnviadas() {
 
                 <div data-ev-id="ev_35128a5939" className="flex flex-col gap-2">
                   <div data-ev-id="ev_8ec74125e0" className="flex items-center justify-between text-xs">
-                    <span data-ev-id="ev_367723ef77" className="text-stone-600">{d.completed_pieces} de {d.total_pieces} peças</span>
+                    <span data-ev-id="ev_367723ef77" className="text-stone-600">{completed} de {total} peças</span>
                     <span data-ev-id="ev_c9f611beba" className="font-semibold text-stone-900">{pct}%</span>
                   </div>
                   <Progress value={pct} className="h-1.5" />
