@@ -30,7 +30,7 @@ export function useSupabaseData<T extends { id: string } = Row<TableName>>(table
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (opts?: { silent?: boolean }) => {
     if (!supabase || !user) {
       setData([]);
       setLoading(false);
@@ -38,7 +38,7 @@ export function useSupabaseData<T extends { id: string } = Row<TableName>>(table
     }
 
     try {
-      setLoading(true);
+      if (!opts?.silent) setLoading(true);
       const { data: result, error } = await supabase
         .from(tableName)
         .select('*')
@@ -50,9 +50,11 @@ export function useSupabaseData<T extends { id: string } = Row<TableName>>(table
     } catch (err: unknown) {
       const message = getErrorMessage(err);
       setError(message);
-      toast({ title: 'Erro ao carregar dados', description: message, variant: 'destructive' });
+      if (!opts?.silent) {
+        toast({ title: 'Erro ao carregar dados', description: message, variant: 'destructive' });
+      }
     } finally {
-      setLoading(false);
+      if (!opts?.silent) setLoading(false);
     }
   }, [tableName, user]);
 
