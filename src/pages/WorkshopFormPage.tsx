@@ -24,6 +24,8 @@ interface Workshop {
 
 export default function WorkshopFormPage() {
   const navigate = useNavigate();
+  const handleClose = useCloseFormConfirm('/oficinas');
+
   const { id } = useParams();
   const isEditing = Boolean(id);
   const { data: workshops, create, update, loading } = useSupabaseData<Workshop>('workshops');
