@@ -98,6 +98,15 @@ export default function FabricFormPage() {
       toast({ title: 'Erro', description: 'Nome é obrigatório', variant: 'destructive' });
       return;
     }
+    const opCheck = validateOperationalCost(operationalCostInput);
+    if (!opCheck.valid) {
+      setOperationalCostError(opCheck.error);
+      toast({ title: 'Erro', description: opCheck.error ?? 'Custo operacional inválido', variant: 'destructive' });
+      return;
+    }
+    setOperationalCostError(null);
+    form.operational_cost = opCheck.value;
+
 
     setSaving(true);
     try {
