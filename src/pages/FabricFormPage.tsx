@@ -105,16 +105,16 @@ export default function FabricFormPage() {
       return;
     }
     setOperationalCostError(null);
-    form.operational_cost = opCheck.value;
-
 
     setSaving(true);
     try {
       const data = {
         ...form,
+        operational_cost: opCheck.value,
         width: form.width / 100,
         supplier_id: form.supplier_id || null
       };
+
 
       if (isEditing) {
         const result = await update(id!, data);
