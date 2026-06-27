@@ -24,6 +24,8 @@ interface Collection {
 
 export default function CollectionFormPage() {
   const navigate = useNavigate();
+  const handleClose = useCloseFormConfirm('/colecoes');
+
   const { id } = useParams();
   const isEditing = Boolean(id);
   const { data: collections, create, update, loading } = useSupabaseData<Collection>('collections');
