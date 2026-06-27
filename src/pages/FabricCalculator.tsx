@@ -51,8 +51,8 @@ export default function FabricCalculator() {
                   {fabrics.map((f) => <option data-ev-id="ev_9668531aba" key={f.id} value={f.id}>{f.name} — {f.color}</option>)}
                 </select>
               </div>
-              <div data-ev-id="ev_624a018308"><Label className="text-xs text-stone-600">Total de metros</Label><Input type="number" value={meters} onChange={(e) => setMeters(+e.target.value || 0)} className="mt-1" /></div>
-              <div data-ev-id="ev_b49dec8acc"><Label className="text-xs text-stone-600">% Desperdício</Label><Input type="number" value={wastePct} onChange={(e) => setWastePct(+e.target.value || 0)} className="mt-1" /></div>
+              <div data-ev-id="ev_624a018308"><Label className="text-xs text-stone-600">Total de metros</Label><NumberInput value={meters} onChange={(v) => setMeters(v ?? 0)} className="mt-1" placeholder="0" /></div>
+              <div data-ev-id="ev_b49dec8acc"><Label className="text-xs text-stone-600">% Desperdício</Label><NumberInput value={wastePct} onChange={(v) => setWastePct(v ?? 0)} className="mt-1" placeholder="0" /></div>
             </div>
           </Card>
           <Card className="p-6 bg-white border-stone-200/80 shadow-none">
