@@ -284,7 +284,7 @@ export default function ProductFormPage() {
   if (loadingProducts && isEditing) {
     return (
       <div data-ev-id="ev_cf5c248879" className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-stone-400" />
+        <ScissorsLoader />
       </div>);
 
   }

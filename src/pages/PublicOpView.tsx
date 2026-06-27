@@ -107,7 +107,7 @@ export default function PublicOpView() {
   if (loading) {
     return (
       <div className="min-h-screen bg-stone-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-stone-400" />
+        <ScissorsLoader />
       </div>
     );
   }

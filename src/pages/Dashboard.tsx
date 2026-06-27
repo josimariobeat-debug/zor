@@ -110,7 +110,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div data-ev-id="ev_a52287126a" className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-stone-400" />
+        <ScissorsLoader />
       </div>);
 
   }
