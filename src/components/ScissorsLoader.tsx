@@ -12,7 +12,7 @@ interface ScissorsLoaderProps {
  */
 export default function ScissorsLoader({ className, label }: ScissorsLoaderProps) {
   return (
-    <div className="inline-flex flex-col items-center justify-center gap-2" role="status" aria-label={label || 'Carregando'}>
+    <div className="flex flex-col items-center justify-center gap-2 mx-auto" role="status" aria-label={label || 'Carregando'}>
       <div className={cn('relative', className ?? 'w-10 h-10')}>
         {/* dashed "fabric seam" line */}
         <svg
