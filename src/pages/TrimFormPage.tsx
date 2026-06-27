@@ -1,4 +1,4 @@
-import ScissorsLoader from '@/components/ScissorsLoader';
+import ScissorsLoader, { PageLoader } from '@/components/ScissorsLoader';
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { Input } from '@/components/ui/input';
@@ -103,9 +103,7 @@ export default function TrimFormPage() {
 
   if (loading && isEditing) {
     return (
-      <div data-ev-id="ev_2e48e744f2" className="flex items-center justify-center min-h-[70vh]">
-        <ScissorsLoader />
-      </div>);
+      <PageLoader />);
 
   }
 

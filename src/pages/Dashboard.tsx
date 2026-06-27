@@ -1,4 +1,4 @@
-import ScissorsLoader from '@/components/ScissorsLoader';
+import ScissorsLoader, { PageLoader } from '@/components/ScissorsLoader';
 // @ts-nocheck
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
@@ -110,9 +110,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div data-ev-id="ev_a52287126a" className="flex items-center justify-center min-h-[70vh]">
-        <ScissorsLoader />
-      </div>);
+      <PageLoader />);
 
   }
 

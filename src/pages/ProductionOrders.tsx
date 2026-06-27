@@ -1,4 +1,4 @@
-import ScissorsLoader from '@/components/ScissorsLoader';
+import ScissorsLoader, { PageLoader } from '@/components/ScissorsLoader';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
@@ -321,9 +321,7 @@ export default function ProductionOrders() {
 
   if (loading) {
     return (
-      <div data-ev-id="ev_05bc27740e" className="flex items-center justify-center min-h-[70vh]">
-        <ScissorsLoader />
-      </div>);
+      <PageLoader />);
 
   }
 

@@ -1,4 +1,4 @@
-import ScissorsLoader from '@/components/ScissorsLoader';
+import ScissorsLoader, { PageLoader } from '@/components/ScissorsLoader';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Card } from '@/components/ui/card';
@@ -28,9 +28,7 @@ export default function Stock() {
 
   if (loading) {
     return (
-      <div data-ev-id="ev_4b5ea88cfa" className="flex items-center justify-center min-h-[70vh]">
-        <ScissorsLoader />
-      </div>);
+      <PageLoader />);
 
   }
 

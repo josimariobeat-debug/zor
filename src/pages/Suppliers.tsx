@@ -1,4 +1,4 @@
-import ScissorsLoader from '@/components/ScissorsLoader';
+import ScissorsLoader, { PageLoader } from '@/components/ScissorsLoader';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Card } from '@/components/ui/card';
@@ -52,9 +52,7 @@ export default function Suppliers() {
 
   if (loading) {
     return (
-      <div data-ev-id="ev_f1f546b178" className="flex items-center justify-center min-h-[70vh]">
-        <ScissorsLoader />
-      </div>);
+      <PageLoader />);
 
   }
 

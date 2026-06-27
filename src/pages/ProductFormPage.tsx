@@ -1,4 +1,4 @@
-import ScissorsLoader from '@/components/ScissorsLoader';
+import ScissorsLoader, { PageLoader } from '@/components/ScissorsLoader';
 // @ts-nocheck
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -284,9 +284,7 @@ export default function ProductFormPage() {
 
   if (loadingProducts && isEditing) {
     return (
-      <div data-ev-id="ev_cf5c248879" className="flex items-center justify-center min-h-[70vh]">
-        <ScissorsLoader />
-      </div>);
+      <PageLoader />);
 
   }
 
