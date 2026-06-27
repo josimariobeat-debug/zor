@@ -182,11 +182,11 @@ export default function ProductFormPage() {
       const trim = trims.find((t) => t.id === value);
       newTrims[index].trim_id = value;
       newTrims[index].trim_name = trim?.name || '';
-      newTrims[index].cost = newTrims[index].quantity * (trim?.price_per_unit || 0);
+      newTrims[index].cost = newTrims[index].quantity * getTrimUnitCost(trim);
     } else if (field === 'quantity') {
       newTrims[index].quantity = value;
       const trim = trims.find((t) => t.id === newTrims[index].trim_id);
-      newTrims[index].cost = value * (trim?.price_per_unit || 0);
+      newTrims[index].cost = value * getTrimUnitCost(trim);
     }
     setTrimsUsed(newTrims);
   };
