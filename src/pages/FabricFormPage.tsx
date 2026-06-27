@@ -49,7 +49,27 @@ export default function FabricFormPage() {
     min_stock: 5
   });
 
+  const [operationalCostInput, setOperationalCostInput] = useState('0,00');
+  const [operationalCostError, setOperationalCostError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const formatBRL = (n: number) =>
+    n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  const validateOperationalCost = (raw: string): { valid: boolean; value: number; error: string | null } => {
+    const trimmed = raw.trim();
+    if (trimmed === '') return { valid: true, value: 0, error: null };
+    const normalized = trimmed.replace(/\./g, '').replace(',', '.');
+    if (!/^\d+(\.\d{1,2})?$/.test(normalized)) {
+      return { valid: false, value: 0, error: 'Informe um valor numérico válido (ex: 25,50).' };
+    }
+    const num = parseFloat(normalized);
+    if (!isFinite(num)) return { valid: false, value: 0, error: 'Valor inválido.' };
+    if (num < 0) return { valid: false, value: 0, error: 'O valor não pode ser negativo.' };
+    if (num > 9_999_999.99) return { valid: false, value: 0, error: 'Valor máximo excedido.' };
+    return { valid: true, value: num, error: null };
+  };
+
 
   useEffect(() => {
     if (isEditing && fabrics.length > 0) {
