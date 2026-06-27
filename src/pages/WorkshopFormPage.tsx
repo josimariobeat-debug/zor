@@ -90,7 +90,7 @@ export default function WorkshopFormPage() {
 
   if (loading && isEditing) {
     return (
-      <div data-ev-id="ev_48b16e30d0" className="flex items-center justify-center h-64">
+      <div data-ev-id="ev_48b16e30d0" className="flex items-center justify-center min-h-[70vh]">
         <ScissorsLoader />
       </div>);
 

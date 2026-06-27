@@ -51,7 +51,7 @@ export default function Workshops() {
 
   if (loading) {
     return (
-      <div data-ev-id="ev_2ae8c7c343" className="flex items-center justify-center h-64">
+      <div data-ev-id="ev_2ae8c7c343" className="flex items-center justify-center min-h-[70vh]">
         <ScissorsLoader />
       </div>);
 

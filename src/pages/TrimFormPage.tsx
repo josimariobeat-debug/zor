@@ -103,7 +103,7 @@ export default function TrimFormPage() {
 
   if (loading && isEditing) {
     return (
-      <div data-ev-id="ev_2e48e744f2" className="flex items-center justify-center h-64">
+      <div data-ev-id="ev_2e48e744f2" className="flex items-center justify-center min-h-[70vh]">
         <ScissorsLoader />
       </div>);
 

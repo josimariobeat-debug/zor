@@ -50,7 +50,7 @@ export default function Collections() {
 
   if (loading) {
     return (
-      <div data-ev-id="ev_70051ced21" className="flex items-center justify-center h-64">
+      <div data-ev-id="ev_70051ced21" className="flex items-center justify-center min-h-[70vh]">
         <ScissorsLoader />
       </div>);
 
