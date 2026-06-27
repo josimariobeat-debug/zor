@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 export interface Toast {
   id: string;
@@ -8,43 +8,43 @@ export interface Toast {
 }
 
 let toastListeners: ((toast: Toast) => void)[] = [];
+let dismissListeners: ((id: string) => void)[] = [];
 let toastId = 0;
 
 export function toast({ title, description, variant = 'default' }: Omit<Toast, 'id'>) {
   const id = String(++toastId);
   const newToast: Toast = { id, title, description, variant };
-  toastListeners.forEach(listener => listener(newToast));
+  toastListeners.forEach((listener) => listener(newToast));
   setTimeout(() => {
     dismissToast(id);
   }, 4000);
   return id;
 }
 
-let dismissListeners: ((id: string) => void)[] = [];
-
 export function dismissToast(id: string) {
-  dismissListeners.forEach(listener => listener(id));
+  dismissListeners.forEach((listener) => listener(id));
 }
 
 export function useToast() {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const addToast = useCallback((newToast: Toast) => {
-    setToasts(prev => [...prev, newToast]);
+    setToasts((prev) => (prev.some((t) => t.id === newToast.id) ? prev : [...prev, newToast]));
   }, []);
 
   const removeToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  useState(() => {
+  useEffect(() => {
     toastListeners.push(addToast);
     dismissListeners.push(removeToast);
     return () => {
-      toastListeners = toastListeners.filter(l => l !== addToast);
-      dismissListeners = dismissListeners.filter(l => l !== removeToast);
+      toastListeners = toastListeners.filter((l) => l !== addToast);
+      dismissListeners = dismissListeners.filter((l) => l !== removeToast);
     };
-  });
+  }, [addToast, removeToast]);
 
   return { toasts, toast, dismissToast: removeToast };
 }
+
