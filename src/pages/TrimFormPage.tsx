@@ -163,7 +163,7 @@ export default function TrimFormPage() {
             </div>
             <div data-ev-id="ev_a2639feafb">
               <label data-ev-id="ev_074b197967" className="block text-sm font-medium text-stone-900 mb-1.5">Estoque Mínimo</label>
-              <Input type="number" step="0.1" value={form.min_stock} onChange={(e) => setForm({ ...form, min_stock: parseFloat(e.target.value) || 0 })} min={0} />
+              <NumberInput step="0.1" value={form.min_stock} onChange={(v) => setForm({ ...form, min_stock: v ?? 0 })} min={0} placeholder="0" />
             </div>
             <div data-ev-id="ev_fc1afc0370">
               <label data-ev-id="ev_4be7786ff2" className="block text-sm font-medium text-stone-900 mb-1.5">Preço Unit. (R$)</label>
