@@ -98,67 +98,130 @@ export default function ProductionOrders() {
     }
   };
 
-  const handlePrint = (op: any, detailed: boolean) => {
+  const handlePrint = async (op: any, detailed: boolean) => {
     const items = op.items || [];
     const trims = op.trims_used || [];
+    const brl = (n: number) => `R$ ${(n || 0).toFixed(2)}`;
+
+    // Buscar imagens dos produtos
+    const productIds = Array.from(new Set(items.map((i: any) => i.product_id).filter(Boolean))) as string[];
+    const imageMap: Record<string, string> = {};
+    if (productIds.length > 0 && supabase) {
+      const { data: prods } = await supabase.from('products').select('id, image').in('id', productIds);
+      (prods || []).forEach((p: any) => { if (p.image) imageMap[p.id] = p.image; });
+    }
+
+    const totalQty = items.reduce(
+      (acc: number, it: any) => acc + (it.variations || []).reduce((s: number, v: any) => s + (v.qty || 0), 0),
+      0
+    );
+    const totalCost = op.total_cost || 0;
+    const totalRevenue = op.total_revenue || 0;
+    const margin = totalRevenue > 0 ? ((totalRevenue - totalCost) / totalRevenue) * 100 : 0;
+    const profit = totalRevenue - totalCost;
 
     let html = `
       <html><head><title>${op.number}</title>
       <style>
-        body { font-family: system-ui, sans-serif; padding: 20px; }
-        h1 { font-size: 18px; margin-bottom: 10px; }
-        h2 { font-size: 14px; margin-top: 20px; color: #666; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; font-size: 12px; }
-        th { background: #f5f5f5; }
-        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
-        .meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px; }
-        .meta-item { background: #f9f9f9; padding: 10px; border-radius: 6px; }
-        .meta-label { font-size: 11px; color: #666; }
-        .meta-value { font-size: 14px; font-weight: 600; }
+        * { box-sizing: border-box; }
+        body { font-family: system-ui, sans-serif; padding: 24px; color: #1c1917; }
+        h1 { font-size: 22px; margin: 0 0 4px; }
+        h2 { font-size: 14px; margin: 24px 0 8px; color: #57534e; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e7e5e4; padding-bottom: 6px; }
+        .sub { color: #78716c; font-size: 12px; margin-bottom: 16px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #f5f5f4; font-size: 12px; }
+        th { background: #fafaf9; font-weight: 600; color: #44403c; }
+        td.num, th.num { text-align: right; }
+        .meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
+        .meta-item { background: #fafaf9; padding: 10px 12px; border-radius: 6px; border: 1px solid #f5f5f4; }
+        .meta-label { font-size: 10px; color: #78716c; text-transform: uppercase; letter-spacing: 0.05em; }
+        .meta-value { font-size: 14px; font-weight: 600; margin-top: 2px; }
+        .product-card { display: flex; gap: 14px; padding: 14px; border: 1px solid #e7e5e4; border-radius: 10px; margin-top: 10px; page-break-inside: avoid; }
+        .product-photo { width: 110px; height: 110px; border-radius: 8px; background: #f5f5f4; object-fit: cover; flex-shrink: 0; border: 1px solid #e7e5e4; }
+        .product-photo.empty { display: flex; align-items: center; justify-content: center; color: #a8a29e; font-size: 11px; }
+        .product-body { flex: 1; min-width: 0; }
+        .product-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+        .product-meta { font-size: 11px; color: #78716c; margin-bottom: 8px; }
+        .var-table { margin-top: 6px; }
+        .totals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 8px; }
+        .obs { background: #fffbeb; border: 1px solid #fde68a; padding: 10px 12px; border-radius: 6px; font-size: 12px; color: #78350f; }
+        @media print { body { padding: 12px; } }
       </style></head><body>
       <h1>${op.number}</h1>
+      <div class="sub">${detailed ? 'Relatório detalhado' : 'Resumo de produção'} · gerado em ${new Date().toLocaleString('pt-BR')}</div>
+
       <div class="meta">
         <div class="meta-item"><div class="meta-label">Status</div><div class="meta-value">${STATUS_MAP[op.status]?.label || op.status}</div></div>
-        <div class="meta-item"><div class="meta-label">Quantidade</div><div class="meta-value">${op.quantity} peças</div></div>
+        <div class="meta-item"><div class="meta-label">Quantidade</div><div class="meta-value">${totalQty || op.quantity} peças</div></div>
         <div class="meta-item"><div class="meta-label">Prazo</div><div class="meta-value">${op.deadline ? new Date(op.deadline).toLocaleDateString('pt-BR') : '-'}</div></div>
-        <div class="meta-item"><div class="meta-label">Tecido</div><div class="meta-value">${op.fabric_name || '-'}</div></div>
-        <div class="meta-item"><div class="meta-label">Metros</div><div class="meta-value">${op.fabric_meters_consumed}m</div></div>
         <div class="meta-item"><div class="meta-label">Oficina</div><div class="meta-value">${op.workshop_name || '-'}</div></div>
+        <div class="meta-item"><div class="meta-label">Tecido</div><div class="meta-value">${op.fabric_name || '-'}</div></div>
+        <div class="meta-item"><div class="meta-label">Metros consumidos</div><div class="meta-value">${op.fabric_meters_consumed || 0}m</div></div>
       </div>
     `;
 
+    if (detailed) {
+      html += `
+        <div class="meta" style="margin-top:10px;">
+          <div class="meta-item"><div class="meta-label">Prioridade</div><div class="meta-value">${op.priority || '-'}</div></div>
+          <div class="meta-item"><div class="meta-label">Início</div><div class="meta-value">${op.start_date ? new Date(op.start_date).toLocaleDateString('pt-BR') : '-'}</div></div>
+          <div class="meta-item"><div class="meta-label">Criada em</div><div class="meta-value">${op.created_at ? new Date(op.created_at).toLocaleDateString('pt-BR') : '-'}</div></div>
+        </div>
+      `;
+    }
+
     if (items.length > 0) {
-      html += `<h2>Produtos</h2><table><thead><tr><th>Produto</th><th>Tamanho</th><th>Cor</th><th>Qtd</th></tr></thead><tbody>`;
+      html += `<h2>Produtos</h2>`;
       items.forEach((item: any) => {
+        const img = imageMap[item.product_id];
+        const itemQty = (item.variations || []).reduce((s: number, v: any) => s + (v.qty || 0), 0);
+        html += `<div class="product-card">
+          ${img ? `<img class="product-photo" src="${img}" />` : `<div class="product-photo empty">sem foto</div>`}
+          <div class="product-body">
+            <div class="product-title">${item.product_name}</div>
+            <div class="product-meta">${itemQty} peças${detailed && item.unit_cost ? ` · custo unitário ${brl(item.unit_cost)}` : ''}</div>
+            <table class="var-table"><thead><tr><th>Tamanho</th><th>Cor</th><th class="num">Qtd</th>${detailed ? '<th class="num">Metros/peça</th>' : ''}</tr></thead><tbody>`;
         (item.variations || []).forEach((v: any) => {
-          html += `<tr><td>${item.product_name}</td><td>${v.size || '-'}</td><td>${v.color || '-'}</td><td>${v.qty}</td></tr>`;
+          html += `<tr><td>${v.size || '-'}</td><td>${v.color || '-'}</td><td class="num">${v.qty}</td>${detailed ? `<td class="num">${v.meters_per_piece || 0}m</td>` : ''}</tr>`;
         });
+        html += `</tbody></table>`;
+        if (detailed) {
+          html += `<div class="totals" style="margin-top:10px;">
+            <div class="meta-item"><div class="meta-label">Tecido</div><div class="meta-value">${brl(item.fabric_cost)}</div></div>
+            <div class="meta-item"><div class="meta-label">Aviamentos</div><div class="meta-value">${brl(item.trim_cost)}</div></div>
+            <div class="meta-item"><div class="meta-label">Mão de obra</div><div class="meta-value">${brl(item.labor_cost)}</div></div>
+            <div class="meta-item"><div class="meta-label">Total item</div><div class="meta-value">${brl(item.total_cost)}</div></div>
+          </div>`;
+        }
+        html += `</div></div>`;
       });
-      html += `</tbody></table>`;
     }
 
     if (trims.length > 0) {
-      html += `<h2>Aviamentos</h2><table><thead><tr><th>Aviamento</th><th>Por Peça</th><th>Total</th></tr></thead><tbody>`;
+      html += `<h2>Aviamentos</h2><table><thead><tr><th>Aviamento</th><th class="num">Por peça</th><th class="num">Total</th></tr></thead><tbody>`;
       trims.forEach((t: any) => {
-        html += `<tr><td>${t.trim_name}</td><td>${t.qty_per_piece}</td><td>${t.total_qty}</td></tr>`;
+        html += `<tr><td>${t.trim_name}</td><td class="num">${t.qty_per_piece}</td><td class="num">${t.total_qty}</td></tr>`;
       });
       html += `</tbody></table>`;
     }
 
     if (detailed) {
-      html += `
-        <h2>Custos</h2>
-        <div class="meta">
-          <div class="meta-item"><div class="meta-label">Custo Total</div><div class="meta-value">R$ ${(op.total_cost || 0).toFixed(2)}</div></div>
-          <div class="meta-item"><div class="meta-label">Receita Prevista</div><div class="meta-value">R$ ${(op.total_revenue || 0).toFixed(2)}</div></div>
-          <div class="meta-item"><div class="meta-label">Margem</div><div class="meta-value">${op.total_revenue > 0 ? ((op.total_revenue - op.total_cost) / op.total_revenue * 100).toFixed(1) : 0}%</div></div>
+      html += `<h2>Custos & receita</h2>
+        <div class="totals">
+          <div class="meta-item"><div class="meta-label">Custo total</div><div class="meta-value">${brl(totalCost)}</div></div>
+          <div class="meta-item"><div class="meta-label">Receita prevista</div><div class="meta-value">${brl(totalRevenue)}</div></div>
+          <div class="meta-item"><div class="meta-label">Lucro</div><div class="meta-value">${brl(profit)}</div></div>
+          <div class="meta-item"><div class="meta-label">Margem</div><div class="meta-value">${margin.toFixed(1)}%</div></div>
         </div>
-      `;
+        <div class="meta" style="margin-top:10px;">
+          <div class="meta-item"><div class="meta-label">Custo médio/peça</div><div class="meta-value">${brl(totalQty > 0 ? totalCost / totalQty : 0)}</div></div>
+          <div class="meta-item"><div class="meta-label">Receita média/peça</div><div class="meta-value">${brl(totalQty > 0 ? totalRevenue / totalQty : 0)}</div></div>
+          <div class="meta-item"><div class="meta-label">Lucro/peça</div><div class="meta-value">${brl(totalQty > 0 ? profit / totalQty : 0)}</div></div>
+        </div>`;
     }
 
     if (op.observations) {
-      html += `<h2>Observações</h2><p style="font-size: 12px; color: #666;">${op.observations}</p>`;
+      html += `<h2>Observações</h2><div class="obs">${op.observations}</div>`;
     }
 
     html += `</body></html>`;
@@ -167,7 +230,8 @@ export default function ProductionOrders() {
     if (win) {
       win.document.write(html);
       win.document.close();
-      win.print();
+      // Aguarda imagens carregarem antes de imprimir
+      win.onload = () => setTimeout(() => win.print(), 300);
     }
   };
 
