@@ -167,7 +167,7 @@ export default function TrimFormPage() {
             </div>
             <div data-ev-id="ev_fc1afc0370">
               <label data-ev-id="ev_4be7786ff2" className="block text-sm font-medium text-stone-900 mb-1.5">Preço Unit. (R$)</label>
-              <Input type="number" step="0.01" value={form.price_per_unit} onChange={(e) => setForm({ ...form, price_per_unit: parseFloat(e.target.value) || 0 })} min={0} />
+              <NumberInput step="0.01" value={form.price_per_unit} onChange={(v) => setForm({ ...form, price_per_unit: v ?? 0 })} min={0} placeholder="0,00" />
             </div>
           </div>
 
