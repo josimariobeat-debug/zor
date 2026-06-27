@@ -33,6 +33,8 @@ interface Supplier {
 
 export default function FabricFormPage() {
   const navigate = useNavigate();
+  const handleClose = useCloseFormConfirm('/tecidos');
+
   const { id } = useParams();
   const isEditing = Boolean(id);
   const { data: fabrics, create, update, loading } = useSupabaseData<Fabric>('fabrics');
