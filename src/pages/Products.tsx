@@ -96,7 +96,7 @@ export default function Products() {
                 { label: 'SKU', cls: 'hidden xl:table-cell' },
                 { label: 'Categoria', cls: 'hidden lg:table-cell' },
                 { label: 'Tamanhos', cls: 'hidden xl:table-cell' },
-                { label: 'Estoque', cls: '' },
+                
                 { label: 'Custo', cls: 'hidden xl:table-cell' },
                 { label: 'Venda', cls: '' },
                 { label: 'Status', cls: 'hidden md:table-cell' },
