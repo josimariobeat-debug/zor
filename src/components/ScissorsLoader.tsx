@@ -12,11 +12,15 @@ interface ScissorsLoaderProps {
  */
 export default function ScissorsLoader({ className, label }: ScissorsLoaderProps) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 mx-auto" role="status" aria-label={label || 'Carregando'}>
-      <div className={cn('relative', className ?? 'w-10 h-10')}>
+    <div
+      className="flex flex-col items-center justify-center gap-2"
+      role="status"
+      aria-label={label || 'Carregando'}
+    >
+      <div className={cn('relative', className ?? 'w-14 h-14 sm:w-16 sm:h-16')}>
         {/* dashed "fabric seam" line */}
         <svg
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[2px] overflow-visible"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[2px] overflow-visible pointer-events-none"
           viewBox="0 0 100 2"
           preserveAspectRatio="none"
           aria-hidden="true"
@@ -52,6 +56,23 @@ export default function ScissorsLoader({ className, label }: ScissorsLoaderProps
           to { stroke-dashoffset: -14; }
         }
       `}</style>
+    </div>
+  );
+}
+
+/**
+ * Full-area centered page loader. Use as the single source of truth
+ * for "loading a page/section" — responsive on any viewport.
+ */
+export function PageLoader({ label, className }: { label?: string; className?: string }) {
+  return (
+    <div
+      className={cn(
+        'flex items-center justify-center w-full min-h-[60vh] px-4',
+        className
+      )}
+    >
+      <ScissorsLoader label={label} />
     </div>
   );
 }
