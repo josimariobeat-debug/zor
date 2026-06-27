@@ -111,7 +111,7 @@ export default function Trims() {
                       </div>
                     </td>
                     <td data-ev-id="ev_dd87ba9ace" className="px-5 py-4 text-sm text-stone-600">{t.unit}</td>
-                    <td data-ev-id="ev_4f00b98362" className="px-5 py-4 text-sm text-stone-900">R$ {(t.price_per_unit || 0).toFixed(2)}</td>
+                    <td data-ev-id="ev_4f00b98362" className="px-5 py-4 text-sm font-medium text-stone-900">R$ {getTrimUnitCost(t).toFixed(2)}</td>
                     <td data-ev-id="ev_24344f6d5c" className="px-5 py-4 text-sm text-stone-500">{t.min_stock}</td>
                     <td data-ev-id="ev_75b1e10db5" className="px-5 py-4">
                       <div data-ev-id="ev_28b701f95c" className="flex items-center gap-1 justify-end">
