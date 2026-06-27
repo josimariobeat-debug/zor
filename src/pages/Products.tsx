@@ -19,6 +19,7 @@ interface Product {
   colors: string[];
   
   cost_price: number;
+  labor_cost: number;
   sale_price: number;
   margin: number;
   status: string;
