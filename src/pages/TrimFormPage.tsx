@@ -29,6 +29,8 @@ interface Supplier {
 
 export default function TrimFormPage() {
   const navigate = useNavigate();
+  const handleClose = useCloseFormConfirm('/aviamentos');
+
   const { id } = useParams();
   const isEditing = Boolean(id);
   const { data: trims, create, update, loading } = useSupabaseData<Trim>('trims');
