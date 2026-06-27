@@ -64,6 +64,7 @@ export default function FabricFormPage() {
           gramatura: fabric.gramatura || 0,
           stock: fabric.stock || 0,
           price_per_meter: fabric.price_per_meter || 0,
+          operational_cost: fabric.operational_cost || 0,
           location: fabric.location || '',
           min_stock: fabric.min_stock || 5
         });
