@@ -203,7 +203,7 @@ export default function FabricFormPage() {
           <div data-ev-id="ev_df081891db" className="grid grid-cols-2 gap-4">
             <div data-ev-id="ev_28338a01bd">
               <label data-ev-id="ev_1f8a48552d" className="block text-sm font-medium text-stone-900 mb-1.5">Gramatura (g/m²)</label>
-              <Input type="number" value={form.gramatura} onChange={(e) => setForm({ ...form, gramatura: parseInt(e.target.value) || 0 })} min={0} />
+              <NumberInput value={form.gramatura} onChange={(v) => setForm({ ...form, gramatura: v ?? 0 })} min={0} placeholder="0" />
             </div>
             <div data-ev-id="ev_47934e0717">
               <label data-ev-id="ev_578d988d6c" className="block text-sm font-medium text-stone-900 mb-1.5">Quantidade (metros)</label>
