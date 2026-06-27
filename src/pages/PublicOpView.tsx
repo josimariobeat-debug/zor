@@ -193,13 +193,30 @@ export default function PublicOpView() {
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <div
-                      className={`w-8 h-8 rounded-md flex items-center justify-center ${
-                        allCompleted ? 'bg-emerald-200 text-emerald-700' : 'bg-emerald-100 text-emerald-700'
-                      }`}
-                    >
-                      <Shirt className="w-4 h-4" strokeWidth={1.75} />
-                    </div>
+                    {productItems[0]?.product_image ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPreviewImage(productItems[0].product_image!);
+                        }}
+                        className="w-10 h-10 rounded-md overflow-hidden border border-stone-200 bg-white flex-shrink-0 hover:ring-2 hover:ring-emerald-400 transition"
+                      >
+                        <img
+                          src={productItems[0].product_image!}
+                          alt={productName}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ) : (
+                      <div
+                        className={`w-10 h-10 rounded-md flex items-center justify-center ${
+                          allCompleted ? 'bg-emerald-200 text-emerald-700' : 'bg-emerald-100 text-emerald-700'
+                        }`}
+                      >
+                        <Shirt className="w-4 h-4" strokeWidth={1.75} />
+                      </div>
+                    )}
                     <h3 className={`font-semibold ${allCompleted ? 'text-emerald-900' : 'text-stone-900'}`}>
                       {productName}
                     </h3>
