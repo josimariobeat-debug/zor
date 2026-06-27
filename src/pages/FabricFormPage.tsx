@@ -180,9 +180,15 @@ export default function FabricFormPage() {
             </div>
           </div>
 
-          <div data-ev-id="ev_265aa7c67a">
-            <label data-ev-id="ev_5825dce775" className="block text-sm font-medium text-stone-900 mb-1.5">Estoque mínimo (m)</label>
-            <Input type="number" step="0.1" value={form.min_stock} onChange={(e) => setForm({ ...form, min_stock: parseFloat(e.target.value) || 0 })} min={0} />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-stone-900 mb-1.5">Estoque mínimo (m)</label>
+              <Input type="number" step="0.1" value={form.min_stock} onChange={(e) => setForm({ ...form, min_stock: parseFloat(e.target.value) || 0 })} min={0} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-stone-900 mb-1.5">Custo operacional (R$)</label>
+              <Input type="number" step="0.01" value={form.operational_cost} onChange={(e) => setForm({ ...form, operational_cost: parseFloat(e.target.value) || 0 })} min={0} placeholder="Ex: frete" />
+            </div>
           </div>
 
           <div data-ev-id="ev_d949f5870e">
