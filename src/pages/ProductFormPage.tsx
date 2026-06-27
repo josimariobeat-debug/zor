@@ -18,7 +18,7 @@ import { getFabricUnitCost } from '@/lib/fabric-cost';
 
 interface Fabric {id: string;name: string;price_per_meter: number;stock: number;operational_cost?: number | null;}
 
-interface Trim {id: string;name: string;price_per_unit: number;stock: number;unit: string;}
+interface Trim {id: string;name: string;price_per_unit: number;stock: number;unit: string;operational_cost?: number | null;}
 interface Workshop {id: string;name: string;price_per_piece: number;}
 interface Collection {id: string;name: string;}
 
