@@ -112,7 +112,17 @@ export default function Fabrics() {
                       {f.stock < (f.min_stock || 5) && <AlertCircle className="w-3.5 h-3.5 text-amber-600" />}
                     </div>
                   </td>
-                  <td data-ev-id="ev_57261b52d4" className="px-5 py-4 text-sm text-stone-900">R$ {(f.price_per_meter || 0).toFixed(2)}</td>
+                  <td data-ev-id="ev_57261b52d4" className="px-5 py-4 text-sm">
+                    <div className="flex flex-col">
+                      <span className="font-medium text-stone-900">R$ {getFabricUnitCost(f).toFixed(2)}</span>
+                      {(f.operational_cost || 0) > 0 && (
+                        <span className="text-[11px] text-stone-400">
+                          R$ {(f.price_per_meter || 0).toFixed(2)} + R$ {(f.operational_cost || 0).toFixed(2)} op.
+                        </span>
+                      )}
+                    </div>
+                  </td>
+
                   <td data-ev-id="ev_3b623dc5cc" className="px-5 py-4 text-sm text-stone-500">{f.location || '-'}</td>
                   <td data-ev-id="ev_eba4d261cf" className="px-5 py-4">
                     <div data-ev-id="ev_ba1b6251e0" className="flex items-center gap-1 justify-end">
