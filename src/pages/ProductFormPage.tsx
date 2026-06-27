@@ -14,11 +14,12 @@ import { toast } from '@/hooks/use-toast';
 import { X, Loader2, Plus, Trash2, Upload, ImageIcon, Layers, Scissors, Users } from 'lucide-react';
 import { useCloseFormConfirm } from '@/hooks/useCloseFormConfirm';
 import { getFabricUnitCost } from '@/lib/fabric-cost';
+import { getTrimUnitCost } from '@/lib/trim-cost';
 
 
 interface Fabric {id: string;name: string;price_per_meter: number;stock: number;operational_cost?: number | null;}
 
-interface Trim {id: string;name: string;price_per_unit: number;stock: number;unit: string;}
+interface Trim {id: string;name: string;price_per_unit: number;stock: number;unit: string;operational_cost?: number | null;}
 interface Workshop {id: string;name: string;price_per_piece: number;}
 interface Collection {id: string;name: string;}
 
@@ -181,11 +182,11 @@ export default function ProductFormPage() {
       const trim = trims.find((t) => t.id === value);
       newTrims[index].trim_id = value;
       newTrims[index].trim_name = trim?.name || '';
-      newTrims[index].cost = newTrims[index].quantity * (trim?.price_per_unit || 0);
+      newTrims[index].cost = newTrims[index].quantity * getTrimUnitCost(trim);
     } else if (field === 'quantity') {
       newTrims[index].quantity = value;
       const trim = trims.find((t) => t.id === newTrims[index].trim_id);
-      newTrims[index].cost = value * (trim?.price_per_unit || 0);
+      newTrims[index].cost = value * getTrimUnitCost(trim);
     }
     setTrimsUsed(newTrims);
   };

@@ -8,6 +8,8 @@ import { useSupabaseData } from '@/hooks/useSupabaseData';
 import { toast } from '@/hooks/use-toast';
 import { useConfirm } from '@/components/ui/confirm-dialog';
 
+import { getTrimUnitCost } from '@/lib/trim-cost';
+
 interface Trim {
   id: string;
   name: string;
@@ -16,6 +18,7 @@ interface Trim {
   stock: number;
   unit: string;
   price_per_unit: number;
+  operational_cost?: number | null;
   min_stock: number;
 }
 
@@ -37,7 +40,7 @@ export default function Trims() {
       context: [
       { label: 'Tipo', value: t.type || '-' },
       { label: 'Estoque', value: `${t.stock} ${t.unit}` },
-      { label: 'Preço/un', value: `R$ ${(t.price_per_unit || 0).toFixed(2)}` }],
+      { label: 'Custo/un', value: `R$ ${getTrimUnitCost(t).toFixed(2)}` }],
 
       itemType: 'Aviamento'
     });
@@ -85,7 +88,7 @@ export default function Trims() {
           <table data-ev-id="ev_f10b41a6c7" className="w-full">
             <thead data-ev-id="ev_226c698c6e">
               <tr data-ev-id="ev_63b4b9eed2" className="border-b border-stone-200 bg-stone-50/50">
-                {['Nome', 'Tipo', 'Estoque', 'Unidade', 'R$/Un', 'Mín.', ''].map((h) =>
+                {['Nome', 'Tipo', 'Estoque', 'Unidade', 'Custo/un', 'Mín.', ''].map((h) =>
               <th data-ev-id="ev_bdf7079218" key={h} className="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-stone-500">
                     {h}
                   </th>
@@ -108,7 +111,7 @@ export default function Trims() {
                       </div>
                     </td>
                     <td data-ev-id="ev_dd87ba9ace" className="px-5 py-4 text-sm text-stone-600">{t.unit}</td>
-                    <td data-ev-id="ev_4f00b98362" className="px-5 py-4 text-sm text-stone-900">R$ {(t.price_per_unit || 0).toFixed(2)}</td>
+                    <td data-ev-id="ev_4f00b98362" className="px-5 py-4 text-sm font-medium text-stone-900">R$ {getTrimUnitCost(t).toFixed(2)}</td>
                     <td data-ev-id="ev_24344f6d5c" className="px-5 py-4 text-sm text-stone-500">{t.min_stock}</td>
                     <td data-ev-id="ev_75b1e10db5" className="px-5 py-4">
                       <div data-ev-id="ev_28b701f95c" className="flex items-center gap-1 justify-end">

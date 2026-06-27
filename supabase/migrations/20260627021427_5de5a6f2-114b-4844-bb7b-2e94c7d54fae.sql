@@ -1,0 +1,1 @@
+ALTER TABLE public.trims ADD COLUMN IF NOT EXISTS operational_cost numeric NOT NULL DEFAULT 0;
