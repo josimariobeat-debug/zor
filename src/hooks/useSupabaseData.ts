@@ -145,7 +145,7 @@ export function useProductionOrders() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (opts?: { silent?: boolean }) => {
     if (!supabase || !user) {
       setData([]);
       setLoading(false);
@@ -153,7 +153,7 @@ export function useProductionOrders() {
     }
 
     try {
-      setLoading(true);
+      if (!opts?.silent) setLoading(true);
       
       // Buscar OPs
       const { data: orders, error: ordersError } = await supabase
@@ -195,11 +195,28 @@ export function useProductionOrders() {
         })
       );
 
-      setData(ordersWithItems);
+      // Merge inteligente: preserva referência de objetos inalterados para evitar
+      // remount de linhas da tabela e manter scroll/foco/seleção do usuário.
+      setData((prev) => {
+        if (prev.length === 0) return ordersWithItems;
+        const prevById = new Map(prev.map((o: any) => [o.id, o]));
+        let changed = prev.length !== ordersWithItems.length;
+        const merged = ordersWithItems.map((next: any) => {
+          const old = prevById.get(next.id);
+          if (!old) { changed = true; return next; }
+          // Comparação rasa via JSON — suficiente para o shape conhecido
+          if (JSON.stringify(old) === JSON.stringify(next)) return old;
+          changed = true;
+          return next;
+        });
+        return changed ? merged : prev;
+      });
     } catch (err: any) {
-      toast({ title: 'Erro ao carregar OPs', description: err.message, variant: 'destructive' });
+      if (!opts?.silent) {
+        toast({ title: 'Erro ao carregar OPs', description: err.message, variant: 'destructive' });
+      }
     } finally {
-      setLoading(false);
+      if (!opts?.silent) setLoading(false);
     }
   }, [user]);
 
