@@ -12,6 +12,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { X, Plus, Trash2, Loader2, Settings, AlertTriangle, Scissors } from 'lucide-react';
+import { useCloseFormConfirm } from '@/hooks/useCloseFormConfirm';
+
 
 interface Product {
   id: string;
