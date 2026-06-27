@@ -240,7 +240,7 @@ export default function ProductFormPage() {
       }
 
       if (isEditing) {
-        await supabase.from('product_fabrics').delete().eq('product_id', productId);
+        await supabase.from('product_fabrics').delete().eq('product_id', productId!);
       }
       if (fabricsUsed.length > 0) {
         const fabricsData = fabricsUsed.filter((f) => f.fabric_id).map((f) => ({
@@ -257,7 +257,7 @@ export default function ProductFormPage() {
       }
 
       if (isEditing) {
-        await supabase.from('product_trims').delete().eq('product_id', productId);
+        await supabase.from('product_trims').delete().eq('product_id', productId!);
       }
       if (trimsUsed.length > 0) {
         const trimsData = trimsUsed.filter((t) => t.trim_id).map((t) => ({

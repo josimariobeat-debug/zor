@@ -131,7 +131,9 @@ export default function OpsEnviadas() {
 
       <div data-ev-id="ev_b8d4fba5d7" className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {dispatches.map((d) => {
-          const pct = d.total_pieces > 0 ? Math.round(d.completed_pieces / d.total_pieces * 100) : 0;
+          const total = d.total_pieces ?? 0;
+          const completed = d.completed_pieces ?? 0;
+          const pct = total > 0 ? Math.round(completed / total * 100) : 0;
           const isNew = d.status === 'finalizado' && d.finished_at &&
           new Date().getTime() - new Date(d.finished_at).getTime() < 3600000; // Última hora
 
