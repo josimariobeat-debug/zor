@@ -14,14 +14,34 @@ export type Row<T extends TableName> = Tables[T]['Row'];
 export type InsertRow<T extends TableName> = Tables[T]['Insert'];
 export type UpdateRow<T extends TableName> = Tables[T]['Update'];
 
+const CONSTRAINT_MESSAGES: Record<string, string> = {
+  fabrics_operational_cost_non_negative: 'O custo operacional não pode ser negativo.',
+};
+
 function getErrorMessage(err: unknown): string {
-  if (err instanceof Error) return err.message;
-  if (typeof err === 'object' && err !== null && 'message' in err) {
-    const m = (err as { message: unknown }).message;
-    if (typeof m === 'string') return m;
+  const obj = (typeof err === 'object' && err !== null ? err : {}) as Record<string, unknown>;
+  const raw =
+    (err instanceof Error && err.message) ||
+    (typeof obj.message === 'string' ? (obj.message as string) : '') ||
+    '';
+
+  // Postgres CHECK violation → mapeia para mensagem amigável
+  if (obj.code === '23514' || /violates check constraint/i.test(raw)) {
+    const match = raw.match(/"([^"]+)"/);
+    const name = match?.[1];
+    if (name && CONSTRAINT_MESSAGES[name]) return CONSTRAINT_MESSAGES[name];
+    return 'Valor informado é inválido para uma das regras do sistema.';
   }
-  return 'Erro desconhecido';
+  // NOT NULL
+  if (obj.code === '23502') return 'Campo obrigatório não preenchido.';
+  // Invalid numeric input
+  if (obj.code === '22P02' || /invalid input syntax for type numeric/i.test(raw)) {
+    return 'Valor numérico inválido.';
+  }
+
+  return raw || 'Erro desconhecido';
 }
+
 
 export function useSupabaseData<T extends { id: string } = Row<TableName>>(tableName: TableName) {
   type R = T;
