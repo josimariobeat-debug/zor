@@ -14,6 +14,7 @@ import { toast } from '@/hooks/use-toast';
 import { X, Loader2, Plus, Trash2, Upload, ImageIcon, Layers, Scissors, Users } from 'lucide-react';
 import { useCloseFormConfirm } from '@/hooks/useCloseFormConfirm';
 import { getFabricUnitCost } from '@/lib/fabric-cost';
+import { getTrimUnitCost } from '@/lib/trim-cost';
 
 
 interface Fabric {id: string;name: string;price_per_meter: number;stock: number;operational_cost?: number | null;}
