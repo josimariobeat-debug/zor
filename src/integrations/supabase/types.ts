@@ -98,6 +98,7 @@ export type Database = {
           location: string | null
           min_stock: number | null
           name: string
+          operational_cost: number
           price_per_meter: number | null
           stock: number | null
           supplier_id: string | null
@@ -114,6 +115,7 @@ export type Database = {
           location?: string | null
           min_stock?: number | null
           name: string
+          operational_cost?: number
           price_per_meter?: number | null
           stock?: number | null
           supplier_id?: string | null
@@ -130,6 +132,7 @@ export type Database = {
           location?: string | null
           min_stock?: number | null
           name?: string
+          operational_cost?: number
           price_per_meter?: number | null
           stock?: number | null
           supplier_id?: string | null
