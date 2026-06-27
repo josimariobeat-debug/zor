@@ -134,7 +134,7 @@ export default function CollectionFormPage() {
             </div>
             <div data-ev-id="ev_52759fbeda">
               <label data-ev-id="ev_df86fb7103" className="block text-sm font-medium text-stone-900 mb-1.5">Meta de Vendas (R$)</label>
-              <NumberInput step="0.01" value={form.goal} onChange={(v) => setForm({ ...form, goal: v ?? 0 })} min={0} placeholder="0,00" />
+              <NumberInput variant="currency" value={form.goal} onChange={(v) => setForm({ ...form, goal: v ?? 0 })} />
             </div>
             <div data-ev-id="ev_d7c619b0a6">
               <label data-ev-id="ev_c1cbe2ab58" className="block text-sm font-medium text-stone-900 mb-1.5">Status</label>
