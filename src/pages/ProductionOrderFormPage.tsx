@@ -372,7 +372,11 @@ export default function ProductionOrderFormPage() {
           <div data-ev-id="ev_65197c520f">
             <div data-ev-id="ev_2c766b61df" className="flex items-center justify-between mb-4">
               <h2 data-ev-id="ev_f5cdc04f7e" className="text-base font-semibold text-stone-900">Produtos da OP</h2>
-              <Button type="button" variant="outline" size="sm" onClick={addProduct} className="gap-1.5 text-sm">
+              <Button
+                type="button"
+                size="sm"
+                onClick={addProduct}
+                className="gap-1.5 text-sm bg-stone-900 hover:bg-stone-800 text-white shadow-sm hover:shadow-md transition-all">
                 <Plus className="w-4 h-4" /> Adicionar Produto
               </Button>
             </div>
