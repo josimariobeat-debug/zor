@@ -88,7 +88,7 @@ export default function Trims() {
           <table data-ev-id="ev_f10b41a6c7" className="w-full">
             <thead data-ev-id="ev_226c698c6e">
               <tr data-ev-id="ev_63b4b9eed2" className="border-b border-stone-200 bg-stone-50/50">
-                {['Nome', 'Tipo', 'Estoque', 'Unidade', 'R$/Un', 'Mín.', ''].map((h) =>
+                {['Nome', 'Tipo', 'Estoque', 'Unidade', 'Custo/un', 'Mín.', ''].map((h) =>
               <th data-ev-id="ev_bdf7079218" key={h} className="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-stone-500">
                     {h}
                   </th>
