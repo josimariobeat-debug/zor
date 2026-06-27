@@ -17,7 +17,7 @@ interface Product {
   collection_id: string | null;
   sizes: string[];
   colors: string[];
-  stock: number;
+  
   cost_price: number;
   sale_price: number;
   margin: number;
