@@ -192,6 +192,7 @@ export type Database = {
           access_token: string
           completed_pieces: number | null
           created_at: string
+          finished_at: string | null
           id: string
           op_number: string
           production_order_id: string | null
@@ -208,6 +209,7 @@ export type Database = {
           access_token?: string
           completed_pieces?: number | null
           created_at?: string
+          finished_at?: string | null
           id?: string
           op_number: string
           production_order_id?: string | null
@@ -224,6 +226,7 @@ export type Database = {
           access_token?: string
           completed_pieces?: number | null
           created_at?: string
+          finished_at?: string | null
           id?: string
           op_number?: string
           production_order_id?: string | null
