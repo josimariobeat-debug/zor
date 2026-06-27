@@ -49,7 +49,27 @@ export default function FabricFormPage() {
     min_stock: 5
   });
 
+  const [operationalCostInput, setOperationalCostInput] = useState('0,00');
+  const [operationalCostError, setOperationalCostError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const formatBRL = (n: number) =>
+    n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  const validateOperationalCost = (raw: string): { valid: boolean; value: number; error: string | null } => {
+    const trimmed = raw.trim();
+    if (trimmed === '') return { valid: true, value: 0, error: null };
+    const normalized = trimmed.replace(/\./g, '').replace(',', '.');
+    if (!/^\d+(\.\d{1,2})?$/.test(normalized)) {
+      return { valid: false, value: 0, error: 'Informe um valor numérico válido (ex: 25,50).' };
+    }
+    const num = parseFloat(normalized);
+    if (!isFinite(num)) return { valid: false, value: 0, error: 'Valor inválido.' };
+    if (num < 0) return { valid: false, value: 0, error: 'O valor não pode ser negativo.' };
+    if (num > 9_999_999.99) return { valid: false, value: 0, error: 'Valor máximo excedido.' };
+    return { valid: true, value: num, error: null };
+  };
+
 
   useEffect(() => {
     if (isEditing && fabrics.length > 0) {
@@ -68,6 +88,7 @@ export default function FabricFormPage() {
           location: fabric.location || '',
           min_stock: fabric.min_stock || 5
         });
+        setOperationalCostInput(formatBRL(fabric.operational_cost || 0));
       }
     }
   }, [isEditing, id, fabrics]);
@@ -77,14 +98,23 @@ export default function FabricFormPage() {
       toast({ title: 'Erro', description: 'Nome é obrigatório', variant: 'destructive' });
       return;
     }
+    const opCheck = validateOperationalCost(operationalCostInput);
+    if (!opCheck.valid) {
+      setOperationalCostError(opCheck.error);
+      toast({ title: 'Erro', description: opCheck.error ?? 'Custo operacional inválido', variant: 'destructive' });
+      return;
+    }
+    setOperationalCostError(null);
 
     setSaving(true);
     try {
       const data = {
         ...form,
+        operational_cost: opCheck.value,
         width: form.width / 100,
         supplier_id: form.supplier_id || null
       };
+
 
       if (isEditing) {
         const result = await update(id!, data);
@@ -187,7 +217,30 @@ export default function FabricFormPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-stone-900 mb-1.5">Custo operacional (R$)</label>
-              <Input type="number" step="0.01" value={form.operational_cost} onChange={(e) => setForm({ ...form, operational_cost: parseFloat(e.target.value) || 0 })} min={0} placeholder="Ex: frete" />
+              <Input
+                type="text"
+                inputMode="decimal"
+                value={operationalCostInput}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/[^\d.,]/g, '');
+                  setOperationalCostInput(raw);
+                  const check = validateOperationalCost(raw);
+                  setOperationalCostError(check.valid ? null : check.error);
+                }}
+                onBlur={() => {
+                  const check = validateOperationalCost(operationalCostInput);
+                  if (check.valid) {
+                    setOperationalCostInput(formatBRL(check.value));
+                    setOperationalCostError(null);
+                  }
+                }}
+                placeholder="Ex: 25,50 (frete)"
+                aria-invalid={!!operationalCostError}
+                className={operationalCostError ? 'border-rose-500 focus-visible:ring-rose-400' : ''}
+              />
+              {operationalCostError && (
+                <p className="mt-1 text-xs text-rose-600">{operationalCostError}</p>
+              )}
             </div>
           </div>
 
