@@ -1,6 +1,6 @@
 import { ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
+import { useCloseFormConfirm } from '@/hooks/useCloseFormConfirm';
 
 interface FormPageShellProps {
   title: string;
@@ -21,9 +21,8 @@ export function FormPageShell({
   submitLabel = 'Salvar',
   isValid = true
 }: FormPageShellProps) {
-  const navigate = useNavigate();
+  const handleBack = useCloseFormConfirm(backTo);
 
-  const handleBack = () => navigate(backTo);
 
   return (
     <div data-ev-id="ev_fec6c0772f" className="min-h-full flex flex-col">

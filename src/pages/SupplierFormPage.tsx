@@ -6,6 +6,8 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { useSupabaseData } from '@/hooks/useSupabaseData';
 import { toast } from '@/hooks/use-toast';
 import { X, Loader2 } from 'lucide-react';
+import { useCloseFormConfirm } from '@/hooks/useCloseFormConfirm';
+
 
 interface Supplier {
   id: string;
@@ -22,6 +24,8 @@ interface Supplier {
 
 export default function SupplierFormPage() {
   const navigate = useNavigate();
+  const handleClose = useCloseFormConfirm('/fornecedores');
+
   const { id } = useParams();
   const isEditing = Boolean(id);
   const { data: suppliers, create, update, loading } = useSupabaseData<Supplier>('suppliers');
@@ -99,7 +103,7 @@ export default function SupplierFormPage() {
         {/* Header */}
         <div data-ev-id="ev_c4a3b704e9" className="flex items-center justify-between mb-8">
           <h1 data-ev-id="ev_e4c10ae899" className="text-xl font-semibold text-stone-900">{isEditing ? 'Editar Fornecedor' : 'Novo Fornecedor'}</h1>
-          <button data-ev-id="ev_23aa8ead17" onClick={() => navigate('/fornecedores')} className="p-2 hover:bg-stone-100 rounded-lg transition-colors">
+          <button data-ev-id="ev_23aa8ead17" onClick={handleClose} className="p-2 hover:bg-stone-100 rounded-lg transition-colors">
             <X className="w-5 h-5 text-stone-500" />
           </button>
         </div>

@@ -8,6 +8,8 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { useSupabaseData } from '@/hooks/useSupabaseData';
 import { toast } from '@/hooks/use-toast';
 import { X, Loader2 } from 'lucide-react';
+import { useCloseFormConfirm } from '@/hooks/useCloseFormConfirm';
+
 
 interface Collection {
   id: string;
@@ -22,6 +24,8 @@ interface Collection {
 
 export default function CollectionFormPage() {
   const navigate = useNavigate();
+  const handleClose = useCloseFormConfirm('/colecoes');
+
   const { id } = useParams();
   const isEditing = Boolean(id);
   const { data: collections, create, update, loading } = useSupabaseData<Collection>('collections');
@@ -101,7 +105,7 @@ export default function CollectionFormPage() {
         {/* Header */}
         <div data-ev-id="ev_0cfbacdf53" className="flex items-center justify-between mb-8">
           <h1 data-ev-id="ev_2279576e62" className="text-xl font-semibold text-stone-900">{isEditing ? 'Editar Coleção' : 'Nova Coleção'}</h1>
-          <button data-ev-id="ev_9c366550ce" onClick={() => navigate('/colecoes')} className="p-2 hover:bg-stone-100 rounded-lg transition-colors">
+          <button data-ev-id="ev_9c366550ce" onClick={handleClose} className="p-2 hover:bg-stone-100 rounded-lg transition-colors">
             <X className="w-5 h-5 text-stone-500" />
           </button>
         </div>

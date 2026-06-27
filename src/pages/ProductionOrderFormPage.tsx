@@ -12,6 +12,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { X, Plus, Trash2, Loader2, Settings, AlertTriangle, Scissors } from 'lucide-react';
+import { useCloseFormConfirm } from '@/hooks/useCloseFormConfirm';
+
 
 interface Product {
   id: string;
@@ -34,6 +36,8 @@ interface OrderItem {product_id: string;product_name: string;product_image?: str
 export default function ProductionOrderFormPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const handleClose = useCloseFormConfirm('/ordens');
+
   const { user } = useAuth();
   const { data: allOrders, create, update, loading: opLoading } = useProductionOrders();
   const { data: products } = useSupabaseData<Product>('products');
@@ -294,7 +298,7 @@ export default function ProductionOrderFormPage() {
           <h1 data-ev-id="ev_f4fff16b7a" className="text-xl font-semibold text-stone-900">
             {isEditing ? `Editar ${existingOrder?.number || 'OP'}` : 'Nova OP'}
           </h1>
-          <button data-ev-id="ev_3aaafd071b" onClick={() => navigate('/ordens')} className="p-2 hover:bg-stone-100 rounded-lg transition-colors">
+          <button data-ev-id="ev_3aaafd071b" onClick={handleClose} className="p-2 hover:bg-stone-100 rounded-lg transition-colors">
             <X className="w-5 h-5 text-stone-500" />
           </button>
         </div>
