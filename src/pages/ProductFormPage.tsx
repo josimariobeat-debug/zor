@@ -27,6 +27,8 @@ const categories = ['Vestido', 'Saia', 'Blusa', 'Calça', 'Blazer', 'Cropped', '
 
 export default function ProductFormPage() {
   const navigate = useNavigate();
+  const handleClose = useCloseFormConfirm('/produtos');
+
   const { id } = useParams();
   const isEditing = Boolean(id);
   const { user } = useAuth();
