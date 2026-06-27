@@ -10,6 +10,7 @@ import { X, Loader2 } from 'lucide-react';
 import { useCloseFormConfirm } from '@/hooks/useCloseFormConfirm';
 
 import { trimTypes } from '@/lib/constants';
+import { getTrimUnitCost } from '@/lib/trim-cost';
 
 interface Trim {
   id: string;
@@ -19,6 +20,7 @@ interface Trim {
   stock: number;
   unit: string;
   price_per_unit: number;
+  operational_cost?: number | null;
   min_stock: number;
 }
 
