@@ -36,6 +36,8 @@ interface OrderItem {product_id: string;product_name: string;product_image?: str
 export default function ProductionOrderFormPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const handleClose = useCloseFormConfirm('/ordens');
+
   const { user } = useAuth();
   const { data: allOrders, create, update, loading: opLoading } = useProductionOrders();
   const { data: products } = useSupabaseData<Product>('products');
