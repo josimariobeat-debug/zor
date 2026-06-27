@@ -62,6 +62,7 @@ export default function TrimFormPage() {
           stock: trim.stock || 0,
           unit: trim.unit || 'unidade',
           price_per_unit: trim.price_per_unit || 0,
+          operational_cost: trim.operational_cost || 0,
           min_stock: trim.min_stock || 10
         });
       }
