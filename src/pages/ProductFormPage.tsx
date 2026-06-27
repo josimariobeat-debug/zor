@@ -287,7 +287,7 @@ export default function ProductFormPage() {
         {/* Header */}
         <div data-ev-id="ev_f558749e4a" className="flex items-center justify-between mb-8">
           <h1 data-ev-id="ev_1107417e5b" className="text-xl font-semibold text-stone-900">{isEditing ? 'Editar Produto' : 'Novo Produto'}</h1>
-          <button data-ev-id="ev_fa5099126b" onClick={() => navigate('/produtos')} className="p-2 hover:bg-stone-100 rounded-lg transition-colors">
+          <button data-ev-id="ev_fa5099126b" onClick={handleClose} className="p-2 hover:bg-stone-100 rounded-lg transition-colors">
             <X className="w-5 h-5 text-stone-500" />
           </button>
         </div>
