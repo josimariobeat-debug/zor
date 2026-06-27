@@ -24,6 +24,8 @@ interface Supplier {
 
 export default function SupplierFormPage() {
   const navigate = useNavigate();
+  const handleClose = useCloseFormConfirm('/fornecedores');
+
   const { id } = useParams();
   const isEditing = Boolean(id);
   const { data: suppliers, create, update, loading } = useSupabaseData<Supplier>('suppliers');
