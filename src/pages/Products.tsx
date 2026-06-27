@@ -88,13 +88,22 @@ export default function Products() {
         </Card> :
 
       <Card className="bg-white border-stone-200/80 shadow-none overflow-hidden">
-          <div data-ev-id="ev_scroll_wrap" className="w-full overflow-x-auto">
-          <table data-ev-id="ev_e420591a31" className="w-full min-w-[960px]">
+          <table data-ev-id="ev_e420591a31" className="w-full table-fixed">
             <thead data-ev-id="ev_15869704e5">
               <tr data-ev-id="ev_526669bb53" className="border-b border-stone-200 bg-stone-50/50">
-                {['Produto', 'SKU', 'Categoria', 'Tamanhos', 'Estoque', 'Custo', 'Venda', 'Status', ''].map((h) =>
-              <th data-ev-id="ev_cd6896ab58" key={h} className="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-stone-500">
-                    {h}
+                {[
+                { label: 'Produto', cls: '' },
+                { label: 'SKU', cls: 'hidden xl:table-cell' },
+                { label: 'Categoria', cls: 'hidden lg:table-cell' },
+                { label: 'Tamanhos', cls: 'hidden xl:table-cell' },
+                { label: 'Estoque', cls: '' },
+                { label: 'Custo', cls: 'hidden xl:table-cell' },
+                { label: 'Venda', cls: '' },
+                { label: 'Status', cls: 'hidden md:table-cell' },
+                { label: '', cls: 'w-[88px]' }].
+                map((h) =>
+              <th data-ev-id="ev_cd6896ab58" key={h.label || 'actions'} className={`text-left px-3 lg:px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-stone-500 ${h.cls}`}>
+                    {h.label}
                   </th>
               )}
               </tr>
@@ -102,28 +111,28 @@ export default function Products() {
             <tbody data-ev-id="ev_b3c4039297">
               {list.map((p) =>
             <tr data-ev-id="ev_85e50ff09b" key={p.id} className="border-b border-stone-100 last:border-0 hover:bg-stone-50/50">
-                  <td data-ev-id="ev_d673e9b52e" className="px-5 py-4">
-                    <div data-ev-id="ev_9b6500c259" className="flex items-center gap-3">
+                  <td data-ev-id="ev_d673e9b52e" className="px-3 lg:px-5 py-4">
+                    <div data-ev-id="ev_9b6500c259" className="flex items-center gap-3 min-w-0">
                       {p.image ?
-                  <img data-ev-id="ev_b7b9137292" src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded-md" /> :
+                  <img data-ev-id="ev_b7b9137292" src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded-md shrink-0" /> :
 
-                  <div data-ev-id="ev_718ddfd828" className="w-10 h-10 bg-stone-100 rounded-md" />
+                  <div data-ev-id="ev_718ddfd828" className="w-10 h-10 bg-stone-100 rounded-md shrink-0" />
                   }
-                      <span data-ev-id="ev_be96606e87" className="text-sm font-medium text-stone-900">{p.name}</span>
+                      <span data-ev-id="ev_be96606e87" className="text-sm font-medium text-stone-900 truncate">{p.name}</span>
                     </div>
                   </td>
-                  <td data-ev-id="ev_e39c5737e5" className="px-5 py-4 text-sm text-stone-600">{p.sku || '-'}</td>
-                  <td data-ev-id="ev_c70b1baa10" className="px-5 py-4 text-sm text-stone-600">{p.category || '-'}</td>
-                  <td data-ev-id="ev_776d24a63f" className="px-5 py-4 text-sm text-stone-600">{(p.sizes || []).join(', ') || '-'}</td>
-                  <td data-ev-id="ev_b64b426d0d" className="px-5 py-4 text-sm text-stone-900 font-medium">{p.stock}</td>
-                  <td data-ev-id="ev_4d2a0fd6c0" className="px-5 py-4 text-sm text-stone-600">R$ {(p.cost_price || 0).toFixed(2)}</td>
-                  <td data-ev-id="ev_3c16f1ea4d" className="px-5 py-4 text-sm text-stone-900 font-medium">R$ {(p.sale_price || 0).toFixed(2)}</td>
-                  <td data-ev-id="ev_a6e524511b" className="px-5 py-4">
+                  <td data-ev-id="ev_e39c5737e5" className="px-3 lg:px-5 py-4 text-sm text-stone-600 hidden xl:table-cell">{p.sku || '-'}</td>
+                  <td data-ev-id="ev_c70b1baa10" className="px-3 lg:px-5 py-4 text-sm text-stone-600 hidden lg:table-cell">{p.category || '-'}</td>
+                  <td data-ev-id="ev_776d24a63f" className="px-3 lg:px-5 py-4 text-sm text-stone-600 hidden xl:table-cell">{(p.sizes || []).join(', ') || '-'}</td>
+                  <td data-ev-id="ev_b64b426d0d" className="px-3 lg:px-5 py-4 text-sm text-stone-900 font-medium">{p.stock}</td>
+                  <td data-ev-id="ev_4d2a0fd6c0" className="px-3 lg:px-5 py-4 text-sm text-stone-600 hidden xl:table-cell">R$ {(p.cost_price || 0).toFixed(2)}</td>
+                  <td data-ev-id="ev_3c16f1ea4d" className="px-3 lg:px-5 py-4 text-sm text-stone-900 font-medium whitespace-nowrap">R$ {(p.sale_price || 0).toFixed(2)}</td>
+                  <td data-ev-id="ev_a6e524511b" className="px-3 lg:px-5 py-4 hidden md:table-cell">
                     <span data-ev-id="ev_a1d6941bb2" className={`text-xs px-2 py-1 rounded-full ${p.status === 'Ativo' ? 'bg-emerald-50 text-emerald-700' : 'bg-stone-100 text-stone-600'}`}>
                       {p.status}
                     </span>
                   </td>
-                  <td data-ev-id="ev_eae0aa8ea5" className="px-5 py-4">
+                  <td data-ev-id="ev_eae0aa8ea5" className="px-3 lg:px-5 py-4 w-[88px]">
                     <div data-ev-id="ev_118eb3c504" className="flex items-center gap-1 justify-end">
                       <button data-ev-id="ev_5da635637c" onClick={() => navigate(`/produtos/${p.id}/editar`)} className="text-stone-400 hover:text-stone-900 p-1">
                         <Pencil className="w-4 h-4" />
@@ -137,7 +146,6 @@ export default function Products() {
             )}
             </tbody>
           </table>
-          </div>
         </Card>
       }
     </div>);
