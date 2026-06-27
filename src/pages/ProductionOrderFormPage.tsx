@@ -433,8 +433,8 @@ export default function ProductionOrderFormPage() {
                                   {product.colors.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                                 </SelectContent>
                               </Select>
-                              <Input type="number" value={v.qty} onChange={(e) => updateVariation(itemIdx, varIdx, 'qty', parseInt(e.target.value) || 0)} min={1} className="text-center" />
-                              <Input type="number" step="0.1" value={v.meters_per_piece} onChange={(e) => updateVariation(itemIdx, varIdx, 'meters_per_piece', parseFloat(e.target.value) || 0)} min={0} className="text-center" />
+                              <NumberInput value={v.qty} onChange={(val) => updateVariation(itemIdx, varIdx, 'qty', val ?? 0)} min={1} className="text-center" placeholder="0" />
+                              <NumberInput step="0.1" value={v.meters_per_piece} onChange={(val) => updateVariation(itemIdx, varIdx, 'meters_per_piece', val ?? 0)} min={0} className="text-center" placeholder="0" />
                               <button data-ev-id="ev_c17b764b2a" onClick={() => removeVariation(itemIdx, varIdx)} className="p-1.5 text-stone-400 hover:text-rose-500 transition-colors">
                                 <Trash2 className="w-4 h-4" />
                               </button>
