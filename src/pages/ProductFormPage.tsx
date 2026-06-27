@@ -435,7 +435,7 @@ export default function ProductFormPage() {
                         {fabrics.map((fab) => <SelectItem key={fab.id} value={fab.id}>{fab.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
-                    <Input type="number" step="0.01" value={f.meters_used} onChange={(e) => updateFabric(idx, 'meters_used', parseFloat(e.target.value) || 0)} min={0} />
+                    <NumberInput step="0.01" value={f.meters_used} onChange={(v) => updateFabric(idx, 'meters_used', v ?? 0)} min={0} placeholder="0,00" />
                     <Input value={`R$ ${f.cost.toFixed(2)}`} disabled className="bg-stone-50" />
                     <button data-ev-id="ev_bfb7613200" type="button" onClick={() => removeFabric(idx)} className="p-2 text-stone-400 hover:text-rose-500 transition-colors">
                       <Trash2 className="w-4 h-4" />
