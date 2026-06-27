@@ -44,6 +44,7 @@ export default function FabricFormPage() {
     gramatura: 0,
     stock: 0,
     price_per_meter: 0,
+    operational_cost: 0,
     location: '',
     min_stock: 5
   });
