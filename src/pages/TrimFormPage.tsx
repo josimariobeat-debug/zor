@@ -45,6 +45,7 @@ export default function TrimFormPage() {
     stock: 0,
     unit: 'unidade',
     price_per_unit: 0,
+    operational_cost: 0,
     min_stock: 10
   });
 
