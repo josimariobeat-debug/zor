@@ -330,11 +330,7 @@ export default function ProductFormPage() {
                 <Input value={form.sizes} onChange={(e) => setForm({ ...form, sizes: e.target.value })} placeholder="P, M, G, GG" />
               </div>
             </div>
-            <div data-ev-id="ev_f646d0bd92" className="grid grid-cols-2 gap-4">
-              <div data-ev-id="ev_f8e056af24">
-                <label data-ev-id="ev_90ba2f2eec" className="block text-sm font-medium text-stone-900 mb-1.5">Estoque</label>
-                <Input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: parseInt(e.target.value) || 0 })} min={0} />
-              </div>
+            <div data-ev-id="ev_f646d0bd92" className="grid grid-cols-1 gap-4">
               <div data-ev-id="ev_8f822b5433">
                 <label data-ev-id="ev_a52e319311" className="block text-sm font-medium text-stone-900 mb-1.5">Status</label>
                 <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
