@@ -5,12 +5,13 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
-import { Check, CheckCircle2, Loader2, Package, Shirt } from 'lucide-react';
+import { Check, CheckCircle2, Loader2, Package, Shirt, X } from 'lucide-react';
 import logoAsset from '@/assets/default-logo.png.asset.json';
 
 interface DispatchItem {
   id: string;
   product_name: string;
+  product_image: string | null;
   size: string | null;
   color: string | null;
   qty: number;
@@ -45,6 +46,7 @@ export default function PublicOpView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [updating, setUpdating] = useState<string | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   useEffect(() => {
     loadDispatch();
@@ -191,13 +193,30 @@ export default function PublicOpView() {
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <div
-                      className={`w-8 h-8 rounded-md flex items-center justify-center ${
-                        allCompleted ? 'bg-emerald-200 text-emerald-700' : 'bg-emerald-100 text-emerald-700'
-                      }`}
-                    >
-                      <Shirt className="w-4 h-4" strokeWidth={1.75} />
-                    </div>
+                    {productItems[0]?.product_image ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPreviewImage(productItems[0].product_image!);
+                        }}
+                        className="w-10 h-10 rounded-md overflow-hidden border border-stone-200 bg-white flex-shrink-0 hover:ring-2 hover:ring-emerald-400 transition"
+                      >
+                        <img
+                          src={productItems[0].product_image!}
+                          alt={productName}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ) : (
+                      <div
+                        className={`w-10 h-10 rounded-md flex items-center justify-center ${
+                          allCompleted ? 'bg-emerald-200 text-emerald-700' : 'bg-emerald-100 text-emerald-700'
+                        }`}
+                      >
+                        <Shirt className="w-4 h-4" strokeWidth={1.75} />
+                      </div>
+                    )}
                     <h3 className={`font-semibold ${allCompleted ? 'text-emerald-900' : 'text-stone-900'}`}>
                       {productName}
                     </h3>
@@ -293,6 +312,28 @@ export default function PublicOpView() {
           </Card>
         )}
       </div>
+
+      {previewImage && (
+        <div
+          onClick={() => setPreviewImage(null)}
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 animate-in fade-in"
+        >
+          <button
+            type="button"
+            onClick={() => setPreviewImage(null)}
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center"
+            aria-label="Fechar"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <img
+            src={previewImage}
+            alt="Pré-visualização do produto"
+            onClick={(e) => e.stopPropagation()}
+            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+          />
+        </div>
+      )}
     </div>
   );
 }
