@@ -7,6 +7,8 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { useSupabaseData } from '@/hooks/useSupabaseData';
 import { toast } from '@/hooks/use-toast';
 import { X, Loader2 } from 'lucide-react';
+import { useCloseFormConfirm } from '@/hooks/useCloseFormConfirm';
+
 import { fabricTypes } from '@/lib/constants';
 
 interface Fabric {
