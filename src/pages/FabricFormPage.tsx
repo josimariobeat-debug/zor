@@ -218,24 +218,15 @@ export default function FabricFormPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-stone-900 mb-1.5">Custo operacional (R$)</label>
-              <Input
-                type="text"
-                inputMode="decimal"
-                value={operationalCostInput}
-                onChange={(e) => {
-                  const raw = e.target.value.replace(/[^\d.,]/g, '');
-                  setOperationalCostInput(raw);
-                  const check = validateOperationalCost(raw);
-                  setOperationalCostError(check.valid ? null : check.error);
+              <NumberInput
+                variant="currency"
+                value={form.operational_cost}
+                onChange={(v) => {
+                  const next = v ?? 0;
+                  setForm({ ...form, operational_cost: next });
+                  setOperationalCostInput(formatBRL(next));
+                  setOperationalCostError(next < 0 ? 'O valor não pode ser negativo.' : null);
                 }}
-                onBlur={() => {
-                  const check = validateOperationalCost(operationalCostInput);
-                  if (check.valid) {
-                    setOperationalCostInput(formatBRL(check.value));
-                    setOperationalCostError(null);
-                  }
-                }}
-                placeholder="Ex: 25,50 (frete)"
                 aria-invalid={!!operationalCostError}
                 className={operationalCostError ? 'border-rose-500 focus-visible:ring-rose-400' : ''}
               />
@@ -243,6 +234,7 @@ export default function FabricFormPage() {
                 <p className="mt-1 text-xs text-rose-600">{operationalCostError}</p>
               )}
             </div>
+
           </div>
 
           <div data-ev-id="ev_d949f5870e">
