@@ -136,12 +136,12 @@ export default function StockMovementFormPage() {
             </Select>
           </FormField>
           <FormField label={`Quantidade (${unit})`}>
-            <Input
-              type="number"
+            <NumberInput
               step="0.1"
               value={form.qty}
-              onChange={(e) => setForm({ ...form, qty: parseFloat(e.target.value) || 0 })}
-              min={0} />
+              onChange={(v) => setForm({ ...form, qty: v ?? 0 })}
+              min={0}
+              placeholder="0" />
 
           </FormField>
         </FormGrid>
