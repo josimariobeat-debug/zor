@@ -3,6 +3,8 @@ import { Input, type InputProps } from '@/components/ui/input';
 
 type Value = number | null | undefined;
 
+export type NumberInputVariant = 'quantity' | 'currency';
+
 export interface NumberInputProps extends Omit<InputProps, 'value' | 'onChange' | 'type'> {
   value: Value;
   onChange: (value: number | null) => void;
@@ -10,42 +12,48 @@ export interface NumberInputProps extends Omit<InputProps, 'value' | 'onChange' 
   allowEmpty?: boolean;
   /** Optional callback fired on blur with the normalized number (or null). */
   onValueBlur?: (value: number | null) => void;
-  /** Casas decimais usadas na máscara pt-BR ao formatar no blur. Padrão: 2. */
+  /**
+   * - 'quantity' (padrão): número simples (1, 2, 1,5). Sem prefixo, sem máscara
+   *   monetária, sem zero à esquerda, inicia vazio.
+   * - 'currency': máscara monetária pt-BR (R$ 1.234,56), sempre 2 decimais ao
+   *   sair do foco. Placeholder padrão "R$ 0,00".
+   */
+  variant?: NumberInputVariant;
+  /** Casas decimais usadas na máscara. Padrão: 2 para currency, até 2 para quantity. */
   decimals?: number;
-  /** Aplica máscara pt-BR (1.234,56) ao sair do foco. Padrão: true. */
-  maskPtBR?: boolean;
 }
 
-const DEFAULT_PLACEHOLDER = '1.234,56';
+const CURRENCY_PLACEHOLDER = 'R$ 0,00';
 
-/** Converte string digitada (pt-BR ou en) em número. */
+/** Converte string digitada (pt-BR ou en, opcional prefixo R$) em número. */
 function parseLocaleNumber(raw: string): number | null {
   if (!raw) return null;
-  let s = raw.trim();
+  let s = raw.replace(/R\$\s?/gi, '').trim();
   if (s === '' || s === '-' || s === '.' || s === ',' || s === '-.' || s === '-,') return null;
-  // Se tiver vírgula, assumimos pt-BR: remove pontos de milhar e troca vírgula por ponto.
   if (s.includes(',')) {
+    // pt-BR: pontos são separadores de milhar, vírgula é decimal.
     s = s.replace(/\./g, '').replace(',', '.');
   }
   const n = Number(s);
   return Number.isFinite(n) ? n : null;
 }
 
-function formatPtBR(n: number, decimals: number): string {
+function formatPtBR(n: number, minDecimals: number, maxDecimals: number): string {
   return n.toLocaleString('pt-BR', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: decimals,
+    minimumFractionDigits: minDecimals,
+    maximumFractionDigits: maxDecimals,
   });
 }
 
+function formatCurrency(n: number, decimals: number): string {
+  return `R$ ${formatPtBR(n, decimals, decimals)}`;
+}
+
 /**
- * NumberInput: campo numérico controlado que aceita estado vazio durante a edição.
- *
- * - O estado interno é sempre `string`, permitindo que o usuário apague o valor
- *   sem que o zero reapareça.
- * - Durante o foco, exibe o conteúdo "cru" (com ponto decimal) para edição fluida.
- * - Ao sair do foco, aplica máscara pt-BR (ex.: 1.234,56).
- * - Emite `number | null` para o `onChange` do componente pai.
+ * NumberInput padronizado:
+ * - Estado interno é sempre string (permite campo vazio durante a edição).
+ * - Quantidade: número limpo, sem prefixo, sem máscara, sem zero à esquerda.
+ * - Monetário: máscara R$ 1.234,56 aplicada apenas ao sair do foco.
  */
 const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
   (
@@ -56,27 +64,32 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
       onFocus,
       onBlur,
       onValueBlur,
-      decimals = 2,
-      maskPtBR = true,
+      variant = 'quantity',
+      decimals,
       placeholder,
       inputMode,
       ...rest
     },
     ref
   ) => {
+    const effectiveDecimals = decimals ?? (variant === 'currency' ? 2 : 2);
+
     const formatDisplay = React.useCallback(
-      (v: Value) => {
+      (v: Value): string => {
         if (v === null || v === undefined || Number.isNaN(v)) return '';
-        return maskPtBR ? formatPtBR(v as number, decimals) : String(v);
+        if (variant === 'currency') return formatCurrency(v as number, effectiveDecimals);
+        // Quantidade: sem separador de milhar, vírgula como decimal, sem zeros à direita.
+        return formatPtBR(v as number, 0, effectiveDecimals);
       },
-      [maskPtBR, decimals]
+      [variant, effectiveDecimals]
     );
 
     const [text, setText] = React.useState<string>(() => formatDisplay(value));
     const [focused, setFocused] = React.useState(false);
     const lastEmitted = React.useRef<number | null>(value ?? null);
 
-    // Sincroniza com o valor externo apenas quando o usuário não está editando.
+    // Sincroniza com valor externo apenas fora do foco, evitando reinjetar 0
+    // enquanto o usuário digita.
     React.useEffect(() => {
       if (focused) return;
       const incoming = value ?? null;
@@ -88,10 +101,17 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const raw = e.target.value;
-      // Mantém o texto exatamente como digitado (sem máscara durante a edição).
       setText(raw);
 
-      if (raw === '' || raw === '-' || raw === '.' || raw === ',' || raw === '-.' || raw === '-,') {
+      const trimmed = raw.replace(/R\$\s?/gi, '').trim();
+      if (
+        trimmed === '' ||
+        trimmed === '-' ||
+        trimmed === '.' ||
+        trimmed === ',' ||
+        trimmed === '-.' ||
+        trimmed === '-,'
+      ) {
         if (allowEmpty) {
           lastEmitted.current = null;
           onChange(null);
@@ -108,10 +128,15 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
 
     const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
       setFocused(true);
-      // Mostra valor "cru" para facilitar edição (sem separador de milhar).
+      // Mostra valor "cru" (sem máscara) para facilitar edição.
       const parsed = parseLocaleNumber(text);
       if (parsed !== null) {
-        setText(String(parsed));
+        // Para quantidade, mantemos vírgula; para currency, removemos prefixo e milhar.
+        setText(
+          variant === 'currency'
+            ? String(parsed)
+            : formatPtBR(parsed, 0, effectiveDecimals).replace(/\./g, '')
+        );
       }
       onFocus?.(e);
     };
@@ -137,6 +162,9 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
       onBlur?.(e);
     };
 
+    const resolvedPlaceholder =
+      placeholder ?? (variant === 'currency' ? CURRENCY_PLACEHOLDER : undefined);
+
     return (
       <Input
         ref={ref}
@@ -146,7 +174,7 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
         onChange={handleChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        placeholder={placeholder ?? DEFAULT_PLACEHOLDER}
+        placeholder={resolvedPlaceholder}
         {...rest}
       />
     );
