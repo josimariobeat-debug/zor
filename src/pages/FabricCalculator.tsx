@@ -68,7 +68,7 @@ export default function FabricCalculator() {
                     <select data-ev-id="ev_62f8d58f65" value={it.product_id} onChange={(e) => setItems(items.map((i) => i.id === it.id ? { ...i, product_id: e.target.value } : i))} className="flex-1 h-9 px-2 rounded-md border border-stone-200 bg-white text-sm">
                       {products.map((p) => <option data-ev-id="ev_4c0c703628" key={p.id} value={p.id}>{p.name}</option>)}
                     </select>
-                    <Input type="number" value={it.qty} onChange={(e) => setItems(items.map((i) => i.id === it.id ? { ...i, qty: +e.target.value || 0 } : i))} className="w-24 h-9" />
+                    <NumberInput value={it.qty} onChange={(val) => setItems(items.map((i) => i.id === it.id ? { ...i, qty: val ?? 0 } : i))} className="w-24 h-9" placeholder="0" />
                     <span data-ev-id="ev_11fda24660" className="text-xs text-stone-500 w-20">{p ? ((p.meters_per_unit || 0) * it.qty).toFixed(2) : 0}m</span>
                     <button data-ev-id="ev_b05840c84d" onClick={() => removeItem(it.id)} className="p-1.5 text-stone-400 hover:text-rose-700 rounded"><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>);
