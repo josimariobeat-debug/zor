@@ -157,14 +157,15 @@ export default function ProductFormPage() {
       const fabric = fabrics.find((f) => f.id === value);
       newFabrics[index].fabric_id = value;
       newFabrics[index].fabric_name = fabric?.name || '';
-      newFabrics[index].cost = newFabrics[index].meters_used * (fabric?.price_per_meter || 0);
+      newFabrics[index].cost = newFabrics[index].meters_used * getFabricUnitCost(fabric);
     } else if (field === 'meters_used') {
       newFabrics[index].meters_used = value;
       const fabric = fabrics.find((f) => f.id === newFabrics[index].fabric_id);
-      newFabrics[index].cost = value * (fabric?.price_per_meter || 0);
+      newFabrics[index].cost = value * getFabricUnitCost(fabric);
     }
     setFabricsUsed(newFabrics);
   };
+
 
   const removeFabric = (index: number) => {
     setFabricsUsed(fabricsUsed.filter((_, i) => i !== index));
