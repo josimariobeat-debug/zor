@@ -509,7 +509,7 @@ export default function ProductFormPage() {
               </div>
               <div data-ev-id="ev_34b833be49">
                 <label data-ev-id="ev_b7ab667f94" className="block text-sm font-medium text-stone-900 mb-1.5">Custo Operacional (R$)</label>
-                <NumberInput step="0.01" value={form.operational_cost} onChange={(v) => setForm({ ...form, operational_cost: v ?? 0 })} min={0} placeholder="0,00" />
+                <NumberInput variant="currency" value={form.operational_cost} onChange={(v) => setForm({ ...form, operational_cost: v ?? 0 })} />
               </div>
               <div data-ev-id="ev_fd27755b6c">
                 <label data-ev-id="ev_a629fcbd42" className="block text-sm font-medium text-stone-900 mb-1.5">Preço de Venda (R$)</label>
