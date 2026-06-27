@@ -44,8 +44,7 @@ export default function Products() {
       confirmText: 'Excluir permanentemente',
       context: [
       { label: 'SKU', value: p.sku || '-' },
-      { label: 'Categoria', value: p.category || '-' },
-      { label: 'Estoque', value: String(p.stock) }],
+      { label: 'Categoria', value: p.category || '-' }],
 
       itemType: 'Produto'
     });
