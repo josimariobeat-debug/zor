@@ -101,7 +101,7 @@ export default function WorkshopFormPage() {
         {/* Header */}
         <div data-ev-id="ev_db2432a5b4" className="flex items-center justify-between mb-8">
           <h1 data-ev-id="ev_7c8085ee41" className="text-xl font-semibold text-stone-900">{isEditing ? 'Editar Oficina' : 'Nova Oficina'}</h1>
-          <button data-ev-id="ev_f7614caa4e" onClick={() => navigate('/oficinas')} className="p-2 hover:bg-stone-100 rounded-lg transition-colors">
+          <button data-ev-id="ev_f7614caa4e" onClick={handleClose} className="p-2 hover:bg-stone-100 rounded-lg transition-colors">
             <X className="w-5 h-5 text-stone-500" />
           </button>
         </div>
