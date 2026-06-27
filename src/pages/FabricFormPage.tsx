@@ -18,6 +18,7 @@ interface Fabric {
   gramatura: number;
   stock: number;
   price_per_meter: number;
+  operational_cost: number | null;
   location: string | null;
   min_stock: number | null;
 }
