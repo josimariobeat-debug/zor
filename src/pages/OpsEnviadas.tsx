@@ -152,7 +152,7 @@ export default function OpsEnviadas() {
 
                 <div data-ev-id="ev_35128a5939" className="flex flex-col gap-2">
                   <div data-ev-id="ev_8ec74125e0" className="flex items-center justify-between text-xs">
-                    <span data-ev-id="ev_367723ef77" className="text-stone-600">{d.completed_pieces} de {d.total_pieces} peças</span>
+                    <span data-ev-id="ev_367723ef77" className="text-stone-600">{completed} de {total} peças</span>
                     <span data-ev-id="ev_c9f611beba" className="font-semibold text-stone-900">{pct}%</span>
                   </div>
                   <Progress value={pct} className="h-1.5" />
