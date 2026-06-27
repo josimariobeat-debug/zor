@@ -8,6 +8,8 @@ import { useSupabaseData } from '@/hooks/useSupabaseData';
 import { toast } from '@/hooks/use-toast';
 import { useConfirm } from '@/components/ui/confirm-dialog';
 
+import { getTrimUnitCost } from '@/lib/trim-cost';
+
 interface Trim {
   id: string;
   name: string;
@@ -16,6 +18,7 @@ interface Trim {
   stock: number;
   unit: string;
   price_per_unit: number;
+  operational_cost?: number | null;
   min_stock: number;
 }
 
