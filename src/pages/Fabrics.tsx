@@ -7,6 +7,7 @@ import { Plus, Search, AlertCircle, Pencil, Trash2, Loader2 } from 'lucide-react
 import { useSupabaseData } from '@/hooks/useSupabaseData';
 import { toast } from '@/hooks/use-toast';
 import { useConfirm } from '@/components/ui/confirm-dialog';
+import { getFabricUnitCost } from '@/lib/fabric-cost';
 
 interface Fabric {
   id: string;
@@ -18,9 +19,11 @@ interface Fabric {
   gramatura: number;
   stock: number;
   price_per_meter: number;
+  operational_cost: number | null;
   location: string | null;
   min_stock: number | null;
 }
+
 
 export default function Fabrics() {
   const navigate = useNavigate();
@@ -40,7 +43,7 @@ export default function Fabrics() {
       { label: 'Tipo', value: f.type || '-' },
       { label: 'Cor', value: f.color || '-' },
       { label: 'Estoque', value: `${f.stock}m` },
-      { label: 'Preço/m', value: `R$ ${(f.price_per_meter || 0).toFixed(2)}` }],
+      { label: 'Custo/m', value: `R$ ${getFabricUnitCost(f).toFixed(2)}` }],
 
       itemType: 'Tecido'
     });
@@ -88,7 +91,7 @@ export default function Fabrics() {
           <table data-ev-id="ev_7e6cd8f129" className="w-full">
             <thead data-ev-id="ev_a29e266e46">
               <tr data-ev-id="ev_eba2c71207" className="border-b border-stone-200 bg-stone-50/50">
-                {['Nome', 'Tipo', 'Cor', 'Estoque', 'R$/Metro', 'Localização', ''].map((h) =>
+                {['Nome', 'Tipo', 'Cor', 'Estoque', 'Custo/m', 'Localização', ''].map((h) =>
               <th data-ev-id="ev_c02bbe74b8" key={h} className="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-stone-500">
                     {h}
                   </th>
@@ -109,7 +112,17 @@ export default function Fabrics() {
                       {f.stock < (f.min_stock || 5) && <AlertCircle className="w-3.5 h-3.5 text-amber-600" />}
                     </div>
                   </td>
-                  <td data-ev-id="ev_57261b52d4" className="px-5 py-4 text-sm text-stone-900">R$ {(f.price_per_meter || 0).toFixed(2)}</td>
+                  <td data-ev-id="ev_57261b52d4" className="px-5 py-4 text-sm">
+                    <div className="flex flex-col">
+                      <span className="font-medium text-stone-900">R$ {getFabricUnitCost(f).toFixed(2)}</span>
+                      {(f.operational_cost || 0) > 0 && (
+                        <span className="text-[11px] text-stone-400">
+                          R$ {(f.price_per_meter || 0).toFixed(2)} + R$ {(f.operational_cost || 0).toFixed(2)} op.
+                        </span>
+                      )}
+                    </div>
+                  </td>
+
                   <td data-ev-id="ev_3b623dc5cc" className="px-5 py-4 text-sm text-stone-500">{f.location || '-'}</td>
                   <td data-ev-id="ev_eba4d261cf" className="px-5 py-4">
                     <div data-ev-id="ev_ba1b6251e0" className="flex items-center gap-1 justify-end">

@@ -13,6 +13,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { X, Plus, Trash2, Loader2, Settings, AlertTriangle, Scissors } from 'lucide-react';
 import { useCloseFormConfirm } from '@/hooks/useCloseFormConfirm';
+import { getFabricUnitCost } from '@/lib/fabric-cost';
+
 
 
 interface Product {
@@ -27,7 +29,7 @@ interface Product {
   trims_cost?: number;
   labor_cost?: number;
 }
-interface Fabric {id: string;name: string;stock: number;price_per_meter: number;}
+interface Fabric {id: string;name: string;stock: number;price_per_meter: number;operational_cost?: number | null;}
 interface Workshop {id: string;name: string;price_per_piece: number;}
 
 interface Variation {size: string;color: string;qty: number;meters_per_piece: number;}
@@ -134,7 +136,8 @@ export default function ProductionOrderFormPage() {
     return items.reduce((sum, item) => sum + item.variations.reduce((s, v) => s + v.qty * v.meters_per_piece, 0), 0);
   }, [items]);
 
-  const fabricCost = selectedFabric ? totalMeters * selectedFabric.price_per_meter : 0;
+  const fabricUnitCost = getFabricUnitCost(selectedFabric);
+  const fabricCost = selectedFabric ? totalMeters * fabricUnitCost : 0;
 
   // Calculate per-item costs - usando labor_cost do produto
   const getItemCosts = (item: OrderItem) => {
@@ -142,7 +145,8 @@ export default function ProductionOrderFormPage() {
     const itemQty = item.variations.reduce((s, v) => s + v.qty, 0);
     const itemMeters = item.variations.reduce((s, v) => s + v.qty * v.meters_per_piece, 0);
 
-    const fabricCostItem = selectedFabric ? itemMeters * selectedFabric.price_per_meter : 0;
+    const fabricCostItem = selectedFabric ? itemMeters * fabricUnitCost : 0;
+
     const trimsCostItem = (product?.trims_cost || 0) * itemQty;
 
     // Usar labor_cost do produto se existir, senão usa o preço da oficina

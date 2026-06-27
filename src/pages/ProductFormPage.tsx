@@ -13,9 +13,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { X, Loader2, Plus, Trash2, Upload, ImageIcon, Layers, Scissors, Users } from 'lucide-react';
 import { useCloseFormConfirm } from '@/hooks/useCloseFormConfirm';
+import { getFabricUnitCost } from '@/lib/fabric-cost';
 
 
-interface Fabric {id: string;name: string;price_per_meter: number;stock: number;}
+interface Fabric {id: string;name: string;price_per_meter: number;stock: number;operational_cost?: number | null;}
+
 interface Trim {id: string;name: string;price_per_unit: number;stock: number;unit: string;}
 interface Workshop {id: string;name: string;price_per_piece: number;}
 interface Collection {id: string;name: string;}
@@ -155,14 +157,15 @@ export default function ProductFormPage() {
       const fabric = fabrics.find((f) => f.id === value);
       newFabrics[index].fabric_id = value;
       newFabrics[index].fabric_name = fabric?.name || '';
-      newFabrics[index].cost = newFabrics[index].meters_used * (fabric?.price_per_meter || 0);
+      newFabrics[index].cost = newFabrics[index].meters_used * getFabricUnitCost(fabric);
     } else if (field === 'meters_used') {
       newFabrics[index].meters_used = value;
       const fabric = fabrics.find((f) => f.id === newFabrics[index].fabric_id);
-      newFabrics[index].cost = value * (fabric?.price_per_meter || 0);
+      newFabrics[index].cost = value * getFabricUnitCost(fabric);
     }
     setFabricsUsed(newFabrics);
   };
+
 
   const removeFabric = (index: number) => {
     setFabricsUsed(fabricsUsed.filter((_, i) => i !== index));
