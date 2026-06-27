@@ -242,6 +242,20 @@ export default function FabricFormPage() {
 
           </div>
 
+          {/* Resumo: custo final por metro = preço/metro + custo operacional */}
+          <div className="flex items-center justify-between rounded-lg border border-stone-200 bg-stone-50 px-4 py-3">
+            <div className="flex flex-col">
+              <span className="text-[11px] uppercase tracking-wider text-stone-500 font-medium">Custo final por metro</span>
+              <span className="text-xs text-stone-500 mt-0.5">
+                R$ {Number(form.price_per_meter || 0).toFixed(2)} preço + R$ {Number(form.operational_cost || 0).toFixed(2)} operacional
+              </span>
+            </div>
+            <span className="text-lg font-semibold text-stone-900">
+              R$ {(Number(form.price_per_meter || 0) + Number(form.operational_cost || 0)).toFixed(2)}
+            </span>
+          </div>
+
+
           <div data-ev-id="ev_d949f5870e">
             <label data-ev-id="ev_7cbdabd8c3" className="block text-sm font-medium text-stone-900 mb-1.5">Localização</label>
             <Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="Ex: Prateleira A1" />
