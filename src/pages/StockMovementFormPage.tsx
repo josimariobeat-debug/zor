@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { FormPageShell, FormSection, FormGrid, FormField } from '@/components/forms/FormPageShell';
 import { Input } from '@/components/ui/input';
+import { NumberInput } from '@/components/ui/number-input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { useSupabaseData } from '@/hooks/useSupabaseData';
