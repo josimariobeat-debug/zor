@@ -164,19 +164,30 @@ export default function TrimFormPage() {
             </div>
           </div>
 
-          <div data-ev-id="ev_ce56660158" className="grid grid-cols-3 gap-4">
-            <div data-ev-id="ev_0afb977968">
-              <label data-ev-id="ev_ab087fc1ce" className="block text-sm font-medium text-stone-900 mb-1.5">Estoque Atual</label>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-stone-900 mb-1.5">Estoque Atual</label>
               <NumberInput step="0.1" value={form.stock} onChange={(v) => setForm({ ...form, stock: v ?? 0 })} min={0} placeholder="0" />
             </div>
-            <div data-ev-id="ev_a2639feafb">
-              <label data-ev-id="ev_074b197967" className="block text-sm font-medium text-stone-900 mb-1.5">Estoque Mínimo</label>
+            <div>
+              <label className="block text-sm font-medium text-stone-900 mb-1.5">Estoque Mínimo</label>
               <NumberInput step="0.1" value={form.min_stock} onChange={(v) => setForm({ ...form, min_stock: v ?? 0 })} min={0} placeholder="0" />
             </div>
-            <div data-ev-id="ev_fc1afc0370">
-              <label data-ev-id="ev_4be7786ff2" className="block text-sm font-medium text-stone-900 mb-1.5">Preço Unit. (R$)</label>
+            <div>
+              <label className="block text-sm font-medium text-stone-900 mb-1.5">Preço Unit. (R$)</label>
               <NumberInput variant="currency" value={form.price_per_unit} onChange={(v) => setForm({ ...form, price_per_unit: v ?? 0 })} />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-stone-900 mb-1.5">Custo Operacional (R$)</label>
+              <NumberInput variant="currency" value={form.operational_cost} onChange={(v) => setForm({ ...form, operational_cost: v ?? 0 })} />
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-stone-200 bg-stone-50/60 px-4 py-3 flex items-center justify-between">
+            <span className="text-sm text-stone-600">Custo final por unidade</span>
+            <span className="text-base font-semibold text-stone-900">
+              R$ {getTrimUnitCost(form).toFixed(2)}
+            </span>
           </div>
 
           {/* Botões */}
