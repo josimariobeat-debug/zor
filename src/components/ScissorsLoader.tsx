@@ -1,3 +1,4 @@
+import ScissorsLoader from '@/components/ScissorsLoader';
 import scissorsUrl from '@/assets/scissors.svg';
 import { cn } from '@/lib/utils';
 
