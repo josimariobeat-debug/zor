@@ -154,7 +154,7 @@ export default function FabricFormPage() {
         {/* Header */}
         <div data-ev-id="ev_9f38884e73" className="flex items-center justify-between mb-8">
           <h1 data-ev-id="ev_bf7838de03" className="text-xl font-semibold text-stone-900">{isEditing ? 'Editar Tecido' : 'Novo Tecido'}</h1>
-          <button data-ev-id="ev_cb62fdc14f" onClick={() => navigate('/tecidos')} className="p-2 hover:bg-stone-100 rounded-lg transition-colors">
+          <button data-ev-id="ev_cb62fdc14f" onClick={handleClose} className="p-2 hover:bg-stone-100 rounded-lg transition-colors">
             <X className="w-5 h-5 text-stone-500" />
           </button>
         </div>
