@@ -129,7 +129,7 @@ export default function WorkshopFormPage() {
           <div data-ev-id="ev_056de0823a" className="grid grid-cols-3 gap-4">
             <div data-ev-id="ev_a285ed951a">
               <label data-ev-id="ev_9d09043a2d" className="block text-sm font-medium text-stone-900 mb-1.5">Preço por Peça (R$)</label>
-              <NumberInput step="0.01" value={form.price_per_piece} onChange={(v) => setForm({ ...form, price_per_piece: v ?? 0 })} min={0} placeholder="0,00" />
+              <NumberInput variant="currency" value={form.price_per_piece} onChange={(v) => setForm({ ...form, price_per_piece: v ?? 0 })} />
             </div>
             <div data-ev-id="ev_1335925c30">
               <label data-ev-id="ev_499250f8ce" className="block text-sm font-medium text-stone-900 mb-1.5">Avaliação</label>
