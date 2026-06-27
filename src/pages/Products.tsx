@@ -123,7 +123,7 @@ export default function Products() {
                   <td data-ev-id="ev_e39c5737e5" className="px-3 lg:px-5 py-4 text-sm text-stone-600 hidden xl:table-cell">{p.sku || '-'}</td>
                   <td data-ev-id="ev_c70b1baa10" className="px-3 lg:px-5 py-4 text-sm text-stone-600 hidden lg:table-cell">{p.category || '-'}</td>
                   <td data-ev-id="ev_776d24a63f" className="px-3 lg:px-5 py-4 text-sm text-stone-600 hidden xl:table-cell">{(p.sizes || []).join(', ') || '-'}</td>
-                  <td data-ev-id="ev_b64b426d0d" className="px-3 lg:px-5 py-4 text-sm text-stone-900 font-medium">{p.stock}</td>
+                  
                   <td data-ev-id="ev_4d2a0fd6c0" className="px-3 lg:px-5 py-4 text-sm text-stone-600 hidden xl:table-cell">R$ {(p.cost_price || 0).toFixed(2)}</td>
                   <td data-ev-id="ev_3c16f1ea4d" className="px-3 lg:px-5 py-4 text-sm text-stone-900 font-medium whitespace-nowrap">R$ {(p.sale_price || 0).toFixed(2)}</td>
                   <td data-ev-id="ev_a6e524511b" className="px-3 lg:px-5 py-4 hidden md:table-cell">
