@@ -110,7 +110,7 @@ export default function TrimFormPage() {
         {/* Header */}
         <div data-ev-id="ev_d8e90b2a1a" className="flex items-center justify-between mb-8">
           <h1 data-ev-id="ev_3f46b308f6" className="text-xl font-semibold text-stone-900">{isEditing ? 'Editar Aviamento' : 'Novo Aviamento'}</h1>
-          <button data-ev-id="ev_f08837101e" onClick={() => navigate('/aviamentos')} className="p-2 hover:bg-stone-100 rounded-lg transition-colors">
+          <button data-ev-id="ev_f08837101e" onClick={handleClose} className="p-2 hover:bg-stone-100 rounded-lg transition-colors">
             <X className="w-5 h-5 text-stone-500" />
           </button>
         </div>
