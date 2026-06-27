@@ -141,6 +141,11 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
       onFocus?.(e);
     };
 
+    const roundToDecimals = (n: number) => {
+      const f = Math.pow(10, effectiveDecimals);
+      return Math.round(n * f) / f;
+    };
+
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
       setFocused(false);
       const parsed = parseLocaleNumber(text);
@@ -156,11 +161,19 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           onValueBlur?.(null);
         }
       } else {
-        setText(formatDisplay(parsed));
-        onValueBlur?.(parsed);
+        // Em campos monetários, força 2 casas decimais para garantir consistência
+        // ao gravar no banco (numeric). Quantidade preserva o número informado.
+        const normalized = variant === 'currency' ? roundToDecimals(parsed) : parsed;
+        if (normalized !== parsed) {
+          lastEmitted.current = normalized;
+          onChange(normalized);
+        }
+        setText(formatDisplay(normalized));
+        onValueBlur?.(normalized);
       }
       onBlur?.(e);
     };
+
 
     const resolvedPlaceholder =
       placeholder ?? (variant === 'currency' ? CURRENCY_PLACEHOLDER : undefined);
