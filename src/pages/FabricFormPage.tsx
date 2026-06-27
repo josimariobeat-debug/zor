@@ -88,6 +88,7 @@ export default function FabricFormPage() {
           location: fabric.location || '',
           min_stock: fabric.min_stock || 5
         });
+        setOperationalCostInput(formatBRL(fabric.operational_cost || 0));
       }
     }
   }, [isEditing, id, fabrics]);
