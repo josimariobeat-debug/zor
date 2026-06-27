@@ -37,19 +37,16 @@ export default function ProductionOrders() {
   const { data: orders, loading, cancel, remove, refetch } = useProductionOrders();
   const { data: workshops } = useSupabaseData<Workshop>('workshops');
 
-  // Realtime: atualiza imediatamente quando a oficina mexe na OP pelo link público
+  // Realtime: atualiza em segundo plano sem disparar loading global
   useEffect(() => {
+    const silentRefetch = () => refetch({ silent: true });
     const channel = supabase
       .channel('production_orders_changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'production_orders' }, () => {
-        refetch();
-      })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'op_dispatches' }, () => {
-        refetch();
-      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'production_orders' }, silentRefetch)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'op_dispatches' }, silentRefetch)
       .subscribe();
-    // Fallback de polling para casos em que o realtime estiver indisponível
-    const interval = setInterval(() => refetch(), 30000);
+    // Fallback de polling silencioso para casos em que o realtime estiver indisponível
+    const interval = setInterval(silentRefetch, 30000);
     return () => {
       supabase.removeChannel(channel);
       clearInterval(interval);
