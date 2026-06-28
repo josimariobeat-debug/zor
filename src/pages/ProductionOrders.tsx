@@ -104,19 +104,53 @@ export default function ProductionOrders() {
     const trims = op.trims_used || [];
     const brl = (n: number) => `R$ ${(n || 0).toFixed(2)}`;
 
-    // Buscar imagens dos produtos
+    // Buscar imagens dos produtos + dados para custo (labor_cost, trims_cost)
     const productIds = Array.from(new Set(items.map((i: any) => i.product_id).filter(Boolean))) as string[];
     const imageMap: Record<string, string> = {};
+    const productMap: Record<string, any> = {};
     if (productIds.length > 0 && supabase) {
-      const { data: prods } = await supabase.from('products').select('id, image').in('id', productIds);
-      (prods || []).forEach((p: any) => { if (p.image) imageMap[p.id] = p.image; });
+      const { data: prods } = await supabase
+        .from('products')
+        .select('id, image, labor_cost, trims_cost')
+        .in('id', productIds);
+      (prods || []).forEach((p: any) => {
+        if (p.image) imageMap[p.id] = p.image;
+        productMap[p.id] = p;
+      });
     }
+
+    // Buscar tecido e oficina para custos por item
+    let fabricUnitCost = 0;
+    if (op.fabric_id && supabase) {
+      const { data: fab } = await supabase.from('fabrics').select('*').eq('id', op.fabric_id).maybeSingle();
+      if (fab) fabricUnitCost = (fab.price_per_meter || 0) + (fab.operational_cost || 0);
+    }
+    let workshopPricePerPiece = 0;
+    if (op.workshop_id && supabase) {
+      const { data: ws } = await supabase.from('workshops').select('price_per_piece').eq('id', op.workshop_id).maybeSingle();
+      if (ws) workshopPricePerPiece = ws.price_per_piece || 0;
+    }
+
+    // Computar custos por item quando não persistidos
+    const computeItemCosts = (item: any) => {
+      const prod = productMap[item.product_id] || {};
+      const itemQty = (item.variations || []).reduce((s: number, v: any) => s + (v.qty || 0), 0);
+      const itemMeters = (item.variations || []).reduce((s: number, v: any) => s + (v.qty || 0) * (v.meters_per_piece || 0), 0);
+      const fabric_cost = item.fabric_cost ?? itemMeters * fabricUnitCost;
+      const trim_cost = item.trim_cost ?? (prod.trims_cost || 0) * itemQty;
+      const laborPerPiece = prod.labor_cost || workshopPricePerPiece || 0;
+      const labor_cost = item.labor_cost ?? laborPerPiece * itemQty;
+      const total_cost = item.total_cost ?? (fabric_cost + trim_cost + labor_cost);
+      const unit_cost = item.unit_cost ?? (itemQty > 0 ? total_cost / itemQty : 0);
+      return { fabric_cost, trim_cost, labor_cost, total_cost, unit_cost, itemQty };
+    };
 
     const totalQty = items.reduce(
       (acc: number, it: any) => acc + (it.variations || []).reduce((s: number, v: any) => s + (v.qty || 0), 0),
       0
     );
-    const totalCost = op.total_cost || 0;
+    const computedTotalCost = items.reduce((s: number, it: any) => s + computeItemCosts(it).total_cost, 0);
+    const totalCost = op.total_cost || computedTotalCost;
     const totalRevenue = op.total_revenue || 0;
     const margin = totalRevenue > 0 ? ((totalRevenue - totalCost) / totalRevenue) * 100 : 0;
     const profit = totalRevenue - totalCost;
