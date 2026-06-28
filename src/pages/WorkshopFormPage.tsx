@@ -67,6 +67,11 @@ export default function WorkshopFormPage() {
       toast({ title: 'Erro', description: 'Nome é obrigatório', variant: 'destructive' });
       return;
     }
+    if (!form.phone.trim()) {
+      toast({ title: 'Erro', description: 'Telefone é obrigatório', variant: 'destructive' });
+      return;
+    }
+
 
     setSaving(true);
     try {
@@ -120,9 +125,10 @@ export default function WorkshopFormPage() {
 
           <div data-ev-id="ev_76b6dd05f9" className="grid grid-cols-2 gap-4">
             <div data-ev-id="ev_a3cf1d1209">
-              <label data-ev-id="ev_37ee2c3ddb" className="block text-sm font-medium text-stone-900 mb-1.5">Telefone</label>
-              <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="(00) 00000-0000" />
+              <label data-ev-id="ev_37ee2c3ddb" className="block text-sm font-medium text-stone-900 mb-1.5">Telefone *</label>
+              <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="(00) 00000-0000" required />
             </div>
+
             <div data-ev-id="ev_f89856acdf">
               <label data-ev-id="ev_9c2cafb3e0" className="block text-sm font-medium text-stone-900 mb-1.5">Email</label>
               <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="email@oficina.com" />

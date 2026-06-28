@@ -248,6 +248,17 @@ export default function ProductionOrderFormPage() {
       return;
     }
 
+    for (const it of items) {
+      for (const v of it.variations) {
+        if (!v.size || !v.color) {
+          toast({ title: 'Erro', description: 'Selecione tamanho e cor em todas as variações', variant: 'destructive' });
+          return;
+        }
+      }
+    }
+
+
+
     setSubmitting(true);
     
     try {

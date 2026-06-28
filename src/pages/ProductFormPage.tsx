@@ -201,7 +201,18 @@ export default function ProductFormPage() {
       toast({ title: 'Erro', description: 'Nome é obrigatório', variant: 'destructive' });
       return;
     }
+    const parsedColors = form.colors.split(',').map((c) => c.trim()).filter(Boolean);
+    const parsedSizes = form.sizes.split(',').map((s) => s.trim().toUpperCase()).filter(Boolean);
+    if (parsedColors.length === 0) {
+      toast({ title: 'Erro', description: 'Informe ao menos uma cor disponível', variant: 'destructive' });
+      return;
+    }
+    if (parsedSizes.length === 0) {
+      toast({ title: 'Erro', description: 'Informe ao menos um tamanho', variant: 'destructive' });
+      return;
+    }
     if (!supabase || !user) return;
+
 
     setSaving(true);
     try {
@@ -330,13 +341,14 @@ export default function ProductFormPage() {
             </div>
             <div data-ev-id="ev_25676adfe9" className="grid grid-cols-2 gap-4">
               <div data-ev-id="ev_6dcf0a0ff7">
-                <label data-ev-id="ev_44b651a22b" className="block text-sm font-medium text-stone-900 mb-1.5">Cores disponíveis (separadas por vírgula)</label>
-                <Input value={form.colors} onChange={(e) => setForm({ ...form, colors: e.target.value })} placeholder="Rosa, Preto, Branco" />
+                <label data-ev-id="ev_44b651a22b" className="block text-sm font-medium text-stone-900 mb-1.5">Cores disponíveis * (separadas por vírgula)</label>
+                <Input value={form.colors} onChange={(e) => setForm({ ...form, colors: e.target.value })} placeholder="Rosa, Preto, Branco" required />
               </div>
               <div data-ev-id="ev_716f2c9369">
-                <label data-ev-id="ev_d6049f4039" className="block text-sm font-medium text-stone-900 mb-1.5">Tamanhos (separados por vírgula)</label>
-                <Input value={form.sizes} onChange={(e) => setForm({ ...form, sizes: e.target.value })} placeholder="P, M, G, GG" />
+                <label data-ev-id="ev_d6049f4039" className="block text-sm font-medium text-stone-900 mb-1.5">Tamanhos * (separados por vírgula)</label>
+                <Input value={form.sizes} onChange={(e) => setForm({ ...form, sizes: e.target.value })} placeholder="P, M, G, GG" required />
               </div>
+
             </div>
             <div data-ev-id="ev_f646d0bd92" className="grid grid-cols-1 gap-4">
               <div data-ev-id="ev_8f822b5433">

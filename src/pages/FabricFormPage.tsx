@@ -104,12 +104,25 @@ export default function FabricFormPage() {
       toast({ title: 'Erro', description: 'Nome é obrigatório', variant: 'destructive' });
       return;
     }
+    if (!form.color.trim()) {
+      toast({ title: 'Erro', description: 'Cor é obrigatória', variant: 'destructive' });
+      return;
+    }
+    if (!form.price_per_meter || form.price_per_meter <= 0) {
+      toast({ title: 'Erro', description: 'Valor/metro é obrigatório', variant: 'destructive' });
+      return;
+    }
+    if (!form.stock || form.stock <= 0) {
+      toast({ title: 'Erro', description: 'Quantidade (metros) é obrigatória', variant: 'destructive' });
+      return;
+    }
     if (form.operational_cost < 0) {
       setOperationalCostError('O valor não pode ser negativo.');
       toast({ title: 'Erro', description: 'O custo operacional não pode ser negativo.', variant: 'destructive' });
       return;
     }
     setOperationalCostError(null);
+
 
     setSaving(true);
     try {
@@ -177,9 +190,10 @@ export default function FabricFormPage() {
           </div>
 
           <div data-ev-id="ev_ac00a64cce">
-            <label data-ev-id="ev_0d1da97039" className="block text-sm font-medium text-stone-900 mb-1.5">Cor</label>
-            <Input value={form.color} onChange={(e) => setForm({ ...form, color: e.target.value })} placeholder="Preto" />
+            <label data-ev-id="ev_0d1da97039" className="block text-sm font-medium text-stone-900 mb-1.5">Cor *</label>
+            <Input value={form.color} onChange={(e) => setForm({ ...form, color: e.target.value })} placeholder="Preto" required />
           </div>
+
 
           <div data-ev-id="ev_9d636a81c2">
             <label data-ev-id="ev_e7de0a3abb" className="block text-sm font-medium text-stone-900 mb-1.5">Fornecedor</label>
@@ -195,7 +209,7 @@ export default function FabricFormPage() {
 
           <div data-ev-id="ev_2284431774" className="grid grid-cols-2 gap-4">
             <div data-ev-id="ev_64e017681c">
-              <label data-ev-id="ev_aaf7a4ee40" className="block text-sm font-medium text-stone-900 mb-1.5">Valor/metro (R$)</label>
+              <label data-ev-id="ev_aaf7a4ee40" className="block text-sm font-medium text-stone-900 mb-1.5">Valor/metro (R$) *</label>
               <NumberInput variant="currency" value={form.price_per_meter} onChange={(v) => setForm({ ...form, price_per_meter: v ?? 0 })} />
             </div>
             <div data-ev-id="ev_771fad0c81">
@@ -210,10 +224,11 @@ export default function FabricFormPage() {
               <NumberInput value={form.gramatura} onChange={(v) => setForm({ ...form, gramatura: v ?? 0 })} min={0} placeholder="0" />
             </div>
             <div data-ev-id="ev_47934e0717">
-              <label data-ev-id="ev_578d988d6c" className="block text-sm font-medium text-stone-900 mb-1.5">Quantidade (metros)</label>
+              <label data-ev-id="ev_578d988d6c" className="block text-sm font-medium text-stone-900 mb-1.5">Quantidade (metros) *</label>
               <NumberInput step="0.1" value={form.stock} onChange={(v) => setForm({ ...form, stock: v ?? 0 })} min={0} placeholder="0" />
             </div>
           </div>
+
 
           <div className="grid grid-cols-2 gap-4">
             <div>
