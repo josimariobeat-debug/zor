@@ -32,12 +32,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     });
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    // Listen for auth changes — só propagar mudanças quando o usuário muda
+    // de identidade. TOKEN_REFRESHED (disparado pelo Supabase ao voltar o foco
+    // da aba) entrega um session/user com nova *referência* mas mesmo id, o que
+    // invalidaria useEffect/useCallback que dependem de `user` em toda a app
+    // e provocaria refetch geral — efeito de "refresh" ao trocar de aba.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setLoading(false);
+      setSession((prev) => (prev?.access_token === nextSession?.access_token ? prev : nextSession));
+      setUser((prev) => {
+        const nextUser = nextSession?.user ?? null;
+        if (prev?.id === nextUser?.id) return prev; // mantém referência estável
+        return nextUser;
+      });
     });
+
 
     return () => subscription.unsubscribe();
   }, []);
