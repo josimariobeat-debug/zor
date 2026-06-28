@@ -209,12 +209,13 @@ export default function ProductionOrders() {
       html += `<h2>Produtos</h2>`;
       items.forEach((item: any) => {
         const img = imageMap[item.product_id];
-        const itemQty = (item.variations || []).reduce((s: number, v: any) => s + (v.qty || 0), 0);
+        const costs = computeItemCosts(item);
+        const itemQty = costs.itemQty;
         html += `<div class="product-card">
           ${img ? `<img class="product-photo" src="${img}" />` : `<div class="product-photo empty">sem foto</div>`}
           <div class="product-body">
             <div class="product-title">${item.product_name}</div>
-            <div class="product-meta">${itemQty} peças${detailed && item.unit_cost ? ` · custo unitário ${brl(item.unit_cost)}` : ''}</div>
+            <div class="product-meta">${itemQty} peças${detailed && costs.unit_cost ? ` · custo unitário ${brl(costs.unit_cost)}` : ''}</div>
             <table class="var-table"><thead><tr><th>Tamanho</th><th>Cor</th><th class="num">Qtd</th>${detailed ? '<th class="num">Metros/peça</th>' : ''}</tr></thead><tbody>`;
         (item.variations || []).forEach((v: any) => {
           html += `<tr><td>${v.size || '-'}</td><td>${v.color || '-'}</td><td class="num">${v.qty}</td>${detailed ? `<td class="num">${v.meters_per_piece || 0}m</td>` : ''}</tr>`;
@@ -222,10 +223,10 @@ export default function ProductionOrders() {
         html += `</tbody></table>`;
         if (detailed) {
           html += `<div class="totals" style="margin-top:10px;">
-            <div class="meta-item"><div class="meta-label">Tecido</div><div class="meta-value">${brl(item.fabric_cost)}</div></div>
-            <div class="meta-item"><div class="meta-label">Aviamentos</div><div class="meta-value">${brl(item.trim_cost)}</div></div>
-            <div class="meta-item"><div class="meta-label">Mão de obra</div><div class="meta-value">${brl(item.labor_cost)}</div></div>
-            <div class="meta-item"><div class="meta-label">Total item</div><div class="meta-value">${brl(item.total_cost)}</div></div>
+            <div class="meta-item"><div class="meta-label">Tecido</div><div class="meta-value">${brl(costs.fabric_cost)}</div></div>
+            <div class="meta-item"><div class="meta-label">Aviamentos</div><div class="meta-value">${brl(costs.trim_cost)}</div></div>
+            <div class="meta-item"><div class="meta-label">Mão de obra</div><div class="meta-value">${brl(costs.labor_cost)}</div></div>
+            <div class="meta-item"><div class="meta-label">Total item</div><div class="meta-value">${brl(costs.total_cost)}</div></div>
           </div>`;
         }
         html += `</div></div>`;
