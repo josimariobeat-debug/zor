@@ -17,7 +17,7 @@ export default function ScissorsLoader({ className, label }: ScissorsLoaderProps
       role="status"
       aria-label={label || 'Carregando'}
     >
-      <div className={cn('relative', className ?? 'w-14 h-14 sm:w-16 sm:h-16')}>
+      <div className={cn('relative', className ?? 'w-10 h-10 sm:w-12 sm:h-12')}>
         {/* dashed "fabric seam" line */}
         <svg
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[2px] overflow-visible pointer-events-none"
