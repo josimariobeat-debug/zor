@@ -104,19 +104,53 @@ export default function ProductionOrders() {
     const trims = op.trims_used || [];
     const brl = (n: number) => `R$ ${(n || 0).toFixed(2)}`;
 
-    // Buscar imagens dos produtos
+    // Buscar imagens dos produtos + dados para custo (labor_cost, trims_cost)
     const productIds = Array.from(new Set(items.map((i: any) => i.product_id).filter(Boolean))) as string[];
     const imageMap: Record<string, string> = {};
+    const productMap: Record<string, any> = {};
     if (productIds.length > 0 && supabase) {
-      const { data: prods } = await supabase.from('products').select('id, image').in('id', productIds);
-      (prods || []).forEach((p: any) => { if (p.image) imageMap[p.id] = p.image; });
+      const { data: prods } = await supabase
+        .from('products')
+        .select('id, image, labor_cost, trims_cost')
+        .in('id', productIds);
+      (prods || []).forEach((p: any) => {
+        if (p.image) imageMap[p.id] = p.image;
+        productMap[p.id] = p;
+      });
     }
+
+    // Buscar tecido e oficina para custos por item
+    let fabricUnitCost = 0;
+    if (op.fabric_id && supabase) {
+      const { data: fab } = await supabase.from('fabrics').select('*').eq('id', op.fabric_id).maybeSingle();
+      if (fab) fabricUnitCost = (fab.price_per_meter || 0) + (fab.operational_cost || 0);
+    }
+    let workshopPricePerPiece = 0;
+    if (op.workshop_id && supabase) {
+      const { data: ws } = await supabase.from('workshops').select('price_per_piece').eq('id', op.workshop_id).maybeSingle();
+      if (ws) workshopPricePerPiece = ws.price_per_piece || 0;
+    }
+
+    // Computar custos por item quando não persistidos
+    const computeItemCosts = (item: any) => {
+      const prod = productMap[item.product_id] || {};
+      const itemQty = (item.variations || []).reduce((s: number, v: any) => s + (v.qty || 0), 0);
+      const itemMeters = (item.variations || []).reduce((s: number, v: any) => s + (v.qty || 0) * (v.meters_per_piece || 0), 0);
+      const fabric_cost = item.fabric_cost ?? itemMeters * fabricUnitCost;
+      const trim_cost = item.trim_cost ?? (prod.trims_cost || 0) * itemQty;
+      const laborPerPiece = prod.labor_cost || workshopPricePerPiece || 0;
+      const labor_cost = item.labor_cost ?? laborPerPiece * itemQty;
+      const total_cost = item.total_cost ?? (fabric_cost + trim_cost + labor_cost);
+      const unit_cost = item.unit_cost ?? (itemQty > 0 ? total_cost / itemQty : 0);
+      return { fabric_cost, trim_cost, labor_cost, total_cost, unit_cost, itemQty };
+    };
 
     const totalQty = items.reduce(
       (acc: number, it: any) => acc + (it.variations || []).reduce((s: number, v: any) => s + (v.qty || 0), 0),
       0
     );
-    const totalCost = op.total_cost || 0;
+    const computedTotalCost = items.reduce((s: number, it: any) => s + computeItemCosts(it).total_cost, 0);
+    const totalCost = op.total_cost || computedTotalCost;
     const totalRevenue = op.total_revenue || 0;
     const margin = totalRevenue > 0 ? ((totalRevenue - totalCost) / totalRevenue) * 100 : 0;
     const profit = totalRevenue - totalCost;
@@ -175,12 +209,13 @@ export default function ProductionOrders() {
       html += `<h2>Produtos</h2>`;
       items.forEach((item: any) => {
         const img = imageMap[item.product_id];
-        const itemQty = (item.variations || []).reduce((s: number, v: any) => s + (v.qty || 0), 0);
+        const costs = computeItemCosts(item);
+        const itemQty = costs.itemQty;
         html += `<div class="product-card">
           ${img ? `<img class="product-photo" src="${img}" />` : `<div class="product-photo empty">sem foto</div>`}
           <div class="product-body">
             <div class="product-title">${item.product_name}</div>
-            <div class="product-meta">${itemQty} peças${detailed && item.unit_cost ? ` · custo unitário ${brl(item.unit_cost)}` : ''}</div>
+            <div class="product-meta">${itemQty} peças${detailed && costs.unit_cost ? ` · custo unitário ${brl(costs.unit_cost)}` : ''}</div>
             <table class="var-table"><thead><tr><th>Tamanho</th><th>Cor</th><th class="num">Qtd</th>${detailed ? '<th class="num">Metros/peça</th>' : ''}</tr></thead><tbody>`;
         (item.variations || []).forEach((v: any) => {
           html += `<tr><td>${v.size || '-'}</td><td>${v.color || '-'}</td><td class="num">${v.qty}</td>${detailed ? `<td class="num">${v.meters_per_piece || 0}m</td>` : ''}</tr>`;
@@ -188,10 +223,10 @@ export default function ProductionOrders() {
         html += `</tbody></table>`;
         if (detailed) {
           html += `<div class="totals" style="margin-top:10px;">
-            <div class="meta-item"><div class="meta-label">Tecido</div><div class="meta-value">${brl(item.fabric_cost)}</div></div>
-            <div class="meta-item"><div class="meta-label">Aviamentos</div><div class="meta-value">${brl(item.trim_cost)}</div></div>
-            <div class="meta-item"><div class="meta-label">Mão de obra</div><div class="meta-value">${brl(item.labor_cost)}</div></div>
-            <div class="meta-item"><div class="meta-label">Total item</div><div class="meta-value">${brl(item.total_cost)}</div></div>
+            <div class="meta-item"><div class="meta-label">Tecido</div><div class="meta-value">${brl(costs.fabric_cost)}</div></div>
+            <div class="meta-item"><div class="meta-label">Aviamentos</div><div class="meta-value">${brl(costs.trim_cost)}</div></div>
+            <div class="meta-item"><div class="meta-label">Mão de obra</div><div class="meta-value">${brl(costs.labor_cost)}</div></div>
+            <div class="meta-item"><div class="meta-label">Total item</div><div class="meta-value">${brl(costs.total_cost)}</div></div>
           </div>`;
         }
         html += `</div></div>`;
