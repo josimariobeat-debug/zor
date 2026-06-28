@@ -75,6 +75,16 @@ export default function TrimFormPage() {
       toast({ title: 'Erro', description: 'Nome é obrigatório', variant: 'destructive' });
       return;
     }
+    if (!form.stock || form.stock <= 0) {
+      toast({ title: 'Erro', description: 'Quantidade é obrigatória', variant: 'destructive' });
+      return;
+    }
+    if (!form.price_per_unit || form.price_per_unit <= 0) {
+      toast({ title: 'Erro', description: 'Preço unitário é obrigatório', variant: 'destructive' });
+      return;
+    }
+
+
 
     setSaving(true);
     try {
@@ -165,7 +175,7 @@ export default function TrimFormPage() {
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-stone-900 mb-1.5">Estoque Atual</label>
+              <label className="block text-sm font-medium text-stone-900 mb-1.5">Quantidade *</label>
               <NumberInput step="0.1" value={form.stock} onChange={(v) => setForm({ ...form, stock: v ?? 0 })} min={0} placeholder="0" />
             </div>
             <div>
@@ -173,9 +183,10 @@ export default function TrimFormPage() {
               <NumberInput step="0.1" value={form.min_stock} onChange={(v) => setForm({ ...form, min_stock: v ?? 0 })} min={0} placeholder="0" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-stone-900 mb-1.5">Preço Unit. (R$)</label>
+              <label className="block text-sm font-medium text-stone-900 mb-1.5">Preço Unit. (R$) *</label>
               <NumberInput variant="currency" value={form.price_per_unit} onChange={(v) => setForm({ ...form, price_per_unit: v ?? 0 })} />
             </div>
+
             <div>
               <label className="block text-sm font-medium text-stone-900 mb-1.5">Custo Operacional (R$)</label>
               <NumberInput variant="currency" value={form.operational_cost} onChange={(v) => setForm({ ...form, operational_cost: v ?? 0 })} />
