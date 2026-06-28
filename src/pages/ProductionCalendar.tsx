@@ -28,6 +28,8 @@ export default function ProductionCalendar() {
   const [selected, setSelected] = useState(today.toISOString().slice(0, 10));
   const { data: orders } = useProductionOrders();
   const [notes, setNotes] = useState<CalendarNote[]>([]);
+  const [preview, setPreview] = useState<{ url: string; type: 'image' | 'video' } | null>(null);
+
   const [loadingNotes, setLoadingNotes] = useState(false);
   const [newNote, setNewNote] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -249,20 +251,37 @@ export default function ProductionCalendar() {
                       {n.attachment_url &&
                   <div data-ev-id="ev_193784dc37" className="bg-stone-900 p-2">
                           {n.attachment_type === 'image' ?
-                    <img data-ev-id="ev_f4603676d2"
-                    src={n.attachment_url}
-                    alt="Anexo"
-                    className="w-full h-32 object-cover rounded" /> :
+                    <button
+                      type="button"
+                      onClick={() => setPreview({ url: n.attachment_url!, type: 'image' })}
+                      className="block w-full"
+                    >
+                      <img
+                        src={n.attachment_url}
+                        alt="Anexo"
+                        className="w-full h-32 object-cover rounded cursor-zoom-in"
+                      />
+                    </button> :
 
-
-                    <video data-ev-id="ev_4509dfb0b3"
-                    src={n.attachment_url}
-                    controls
-                    className="w-full h-32 object-cover rounded" />
-
+                    <button
+                      type="button"
+                      onClick={() => setPreview({ url: n.attachment_url!, type: 'video' })}
+                      className="block w-full relative group"
+                    >
+                      <video
+                        src={n.attachment_url}
+                        className="w-full h-32 object-cover rounded pointer-events-none"
+                      />
+                      <span className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors rounded">
+                        <span className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center">
+                          <span className="ml-1 border-y-[7px] border-y-transparent border-l-[11px] border-l-stone-900" />
+                        </span>
+                      </span>
+                    </button>
                     }
                         </div>
                   }
+
                       <div data-ev-id="ev_973523ed59" className="flex items-start gap-2 p-3">
                         <span data-ev-id="ev_ff09eb3cf9" className="flex-1 text-xs text-stone-700">
                           {n.text || (n.attachment_type === 'image' ? 'Imagem anexada' : 'Vídeo anexado')}
